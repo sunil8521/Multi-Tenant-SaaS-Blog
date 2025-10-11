@@ -27,7 +27,6 @@ type FormValues = {
   subdomain?: string;
   description?: string;
   industry?: string;
-  teamSize?: string;
   fullName: string;
   email: string;
   password: string;
@@ -74,19 +73,29 @@ export default function TeamSignupForm({ className }: { className?: string }) {
   const onBack = () => setStep(1);
 
   const onSubmit = async (values: FormValues) => {
-    console.log(values)
-    try{
-      const response = await fetch("http://localhost:3000/api/team/create-team", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      const data = await response.json();
-    toast.success(data.message);
-
-    }catch(err){
+    try {
+      // const response = await fetch(
+      //   `${import.meta.env.VITE_API_URL}/team/create-team`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(values),
+      //   }
+      // );
+      // const data = await response.json();
+      // toast.success(data.message);
+    const data = { subdomain: "hulhal" }; // mock data
+      const currentHost = window.location.hostname;
+      const currentPort = window.location.port
+        ? `:${window.location.port}`
+        : "";
+      const protocol = window.location.protocol;
+      const teamUrl = `${protocol}//${data.subdomain}.${currentHost}${currentPort}`;
+      // Redirect to the new subdomain
+      window.location.href = teamUrl;
+    } catch (err) {
       console.log("Error creating team:", err);
     }
   };
@@ -233,42 +242,42 @@ export default function TeamSignupForm({ className }: { className?: string }) {
                 {/* Industry & Team Size */}
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="flex flex-col gap-2">
-                  <Label htmlFor="industry" className="text-sm font-medium">
-                    Industry / Category
-                  </Label>
+                    <Label htmlFor="industry" className="text-sm font-medium">
+                      Industry / Category
+                    </Label>
 
-                  {/* register a hidden input so react-hook-form can validate this custom Select */}
-                  <input
-                    type="hidden"
-                    {...register("industry", {
-                    required: "Industry is required",
-                    })}
-                  />
+                    {/* register a hidden input so react-hook-form can validate this custom Select */}
+                    <input
+                      type="hidden"
+                      {...register("industry", {
+                        required: "Industry is required",
+                      })}
+                    />
 
-                  <Select
-                    onValueChange={(v) =>
-                    setValue("industry", v, { shouldValidate: true })
-                    }
-                    value={watch("industry") || ""}
-                  >
-                    <SelectTrigger
-                    id="industry"
-                    aria-required="true"
-                    className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                    <Select
+                      onValueChange={(v) =>
+                        setValue("industry", v, { shouldValidate: true })
+                      }
+                      value={watch("industry") || ""}
                     >
-                    <SelectValue placeholder="Select industry" />
-                    </SelectTrigger>
-                    <SelectContent>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Marketing">Marketing</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Healthcare">Healthcare</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <SelectTrigger
+                        id="industry"
+                        aria-required="true"
+                        className="w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary"
+                      >
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Marketing">Marketing</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Finance">Finance</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <FieldError message={errors.industry?.message} />
+                    <FieldError message={errors.industry?.message} />
                   </div>
                 </div>
 

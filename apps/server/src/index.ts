@@ -15,7 +15,7 @@ import postRoutes from "./routes/post.routes.js"
 dotenv.config({ path: "./.env" });
 
 export const envMode = process.env.NODE_ENV?.trim() || "DEVELOPMENT";
-const port = process.env.PORT || 3000;
+const port: number = Number(process.env.PORT ?? 3000);
 
 const app = express();
 
@@ -55,7 +55,7 @@ async function startServer() {
     await prisma.$connect(); // Try connecting to the database
     console.log("\x1b[33mDatabase connected successfully!\x1b[0m");
 
-    app.listen(port, () => {
+    app.listen(port, "0.0.0.0", () => {
       console.log(
         `\x1b[33mServer is working on Port: ${port} in ${envMode} Mode.\x1b[0m`
       );

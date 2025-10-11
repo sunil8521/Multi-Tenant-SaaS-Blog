@@ -1,8 +1,9 @@
 import { Router } from "express";
-import {CreateTeam} from "../functions/team.js"
+import {CreateTeam,CheckSubdomin} from "../functions/team.js"
 const teamRoutes: Router = Router();
 
 teamRoutes.post("/create-team",CreateTeam)
+teamRoutes.get("/validate",CheckSubdomin)
 
 
 

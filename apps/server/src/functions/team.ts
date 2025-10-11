@@ -47,6 +47,21 @@ export const CreateTeam = TryCatch(
     res.status(201).json({
       success: true,
       message: `Team "${result.teamData.name}" created successfully.`,
+      subdomain: subdomain,
     });
+  }
+);
+export const CheckSubdomin = TryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const raw = req.query.subdomain;
+    const subdomain = Array.isArray(raw) ? raw[0] : raw;
+    if (!subdomain || typeof subdomain !== "string")
+      return res.status(400).json({ exists: false });
+    const team = await prisma.team.findUnique({
+      where: { subdomain: subdomain.toLowerCase() },
+      select: { id: true },
+    });
+
+    res.json({ exists: !!team });
   }
 );
