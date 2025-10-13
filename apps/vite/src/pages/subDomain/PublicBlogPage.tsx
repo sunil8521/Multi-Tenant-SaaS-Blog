@@ -1,4 +1,3 @@
-"use client"
 
 import { Button } from "@repo/ui/components/button"
 import { Badge } from "@repo/ui/components/badge"
@@ -113,6 +112,10 @@ const trendingTags = [
   "Open Source",
 ]
 
+// const trendingTags=[]
+// const allPosts=[]
+// const featuredPosts=[]
+
  function PublicBlogPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTag, setSelectedTag] = useState("all")
@@ -135,7 +138,7 @@ const trendingTags = [
             Explore insights, tutorials, and stories from developers, designers, and teams around the world.
           </p>
           <Button size="lg" asChild>
-            <Link to="/blog/write">
+            <Link to="/write">
               <PenTool className="mr-2 h-5 w-5" />
               Start Writing
             </Link>
@@ -359,7 +362,7 @@ const trendingTags = [
                   Share your knowledge and connect with readers worldwide.
                 </p>
                 <Button asChild className="w-full">
-                  <Link to="/blog/write">
+                  <Link to="/write">
                     <PenTool className="mr-2 h-4 w-4" />
                     Write Your First Post
                   </Link>

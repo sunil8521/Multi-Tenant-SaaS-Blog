@@ -10,6 +10,7 @@ import { useState } from "react"
  function PublicLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -17,7 +18,7 @@ import { useState } from "react"
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link to="/blog" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TB</span>
               </div>
@@ -26,16 +27,13 @@ import { useState } from "react"
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <Link to="/blog" className="text-sm font-medium hover:text-blue-600 transition-colors">
+              <Link to="/" className="text-sm font-medium hover:text-blue-600 transition-colors">
                 Explore
               </Link>
-              <Link to="/blog/write" className="text-sm font-medium hover:text-blue-600 transition-colors">
+              <Link to="/write" className="text-sm font-medium hover:text-blue-600 transition-colors">
                 Write
               </Link>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input placeholder="Search posts..." className="pl-10 w-64" />
-              </div>
+         
             </nav>
 
             {/* Auth Buttons */}
@@ -43,9 +41,9 @@ import { useState } from "react"
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/login">Sign In</Link>
               </Button>
-              <Button size="sm" asChild>
+              {/* <Button size="sm" asChild>
                 <Link to="/signup">Get Started</Link>
-              </Button>
+              </Button> */}
             </div>
 
             {/* Mobile Menu Button */}
@@ -62,10 +60,10 @@ import { useState } from "react"
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input placeholder="Search posts..." className="pl-10" />
                 </div>
-                <Link to="/blog" className="text-sm font-medium hover:text-blue-600 transition-colors">
+                <Link to="/" className="text-sm font-medium hover:text-blue-600 transition-colors">
                   Explore
                 </Link>
-                <Link to="/blog/write" className="text-sm font-medium hover:text-blue-600 transition-colors">
+                <Link to="/write" className="text-sm font-medium hover:text-blue-600 transition-colors">
                   Write
                 </Link>
                 <div className="flex space-x-3 pt-2">
@@ -104,12 +102,12 @@ import { useState } from "react"
               <h3 className="font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
-                  <Link to="/blog" className="hover:text-foreground transition-colors">
+                  <Link to="/" className="hover:text-foreground transition-colors">
                     Explore
                   </Link>
                 </li>
                 <li>
-                  <Link to="/blog/write" className="hover:text-foreground transition-colors">
+                  <Link to="/write" className="hover:text-foreground transition-colors">
                     Write
                   </Link>
                 </li>

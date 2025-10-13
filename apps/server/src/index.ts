@@ -5,6 +5,8 @@ import { errorMiddleware } from "./middlewares/error.js";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import prisma from "@repo/db/client";
+import { auth } from "./lib/auth.js";
+import { toNodeHandler } from "better-auth/node";
 
 //route
 import userRoutes from "./routes/user.routes.js"
@@ -12,7 +14,7 @@ import teamRoutes from "./routes/team.routes.js"
 import postRoutes from "./routes/post.routes.js"
 
 
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: "./.env" ,quiet: true});
 
 export const envMode = process.env.NODE_ENV?.trim() || "DEVELOPMENT";
 const port: number = Number(process.env.PORT ?? 3000);
@@ -28,15 +30,34 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: " * ", credentials: true }));
-app.use(morgan("dev"));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow server-side requests
 
-app.get("/", (req, res) => {
+      // Allow main + subdomains of blogapp.tech
+      const allowedPattern = /^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
+
+      if (allowedPattern.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed for this origin: " + origin));
+      }
+    },
+    credentials: true, // ✅ Needed for cookies (BetterAuth sessions),
+  methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
+  // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  optionsSuccessStatus: 204,
+  })
+);
+// app.use(morgan("dev"));
+
+app.get("/", (req, res) => {``
   res.send("Hello, World!");
 });
 
 // your routes here
-
+app.all(/^\/api\/auth(?:\/.*)?$/, toNodeHandler(auth));
 app.use("/api/user",userRoutes)
 app.use("/api/team",teamRoutes)
 app.use("/api/post",postRoutes)
@@ -53,12 +74,12 @@ app.get(/.*/, (req, res) => {
 async function startServer() {
   try {
     await prisma.$connect(); // Try connecting to the database
-    console.log("\x1b[33mDatabase connected successfully!\x1b[0m");
+    // console.log("\x1b[33mDatabase connected successfully!\x1b[0m");
 
     app.listen(port, "0.0.0.0", () => {
-      console.log(
-        `\x1b[33mServer is working on Port: ${port} in ${envMode} Mode.\x1b[0m`
-      );
+      // console.log(
+      //   `\x1b[33mServer is working on Port: ${port} in ${envMode} Mode.\x1b[0m`
+      // );
     });
   } catch (error) {
     console.error("\x1b[31mDatabase connection failed!\x1b[0m", error);

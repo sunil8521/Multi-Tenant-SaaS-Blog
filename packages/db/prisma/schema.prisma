@@ -18,15 +18,57 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   fullName  String
-  password  String
+    image         String?
+      emailVerified Boolean     @default(false)
+
   jobTitle  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+    accounts      Account[]
+  sessions      Session[]
   teams     Team[]   @relation("TeamOwner")
     memberships TeamMember[]
 
 }
+model Account {
+  id                    String   @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  user                  User     @relation(fields: [userId], references: [id])
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
 
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  expiresAt  DateTime
+  ipAddress  String?
+  userAgent  String?
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
 model Team {
   id          String       @id @default(cuid())
   name        String
@@ -38,6 +80,8 @@ model Team {
   ownerId     String
   owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
   members     TeamMember[]
+  @@index([ownerId])
+  @@index([subdomain])
 }
 model TeamMember {
   id      String   @id @default(cuid())
@@ -48,6 +92,8 @@ model TeamMember {
   user    User     @relation(fields: [userId], references: [id])
 
   @@unique([teamId, userId]) // one user can be in a team only once
+  @@index([userId])
+  @@index([teamId])
 }
 
 enum Role {

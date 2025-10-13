@@ -74,19 +74,19 @@ export default function TeamSignupForm({ className }: { className?: string }) {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_API_URL}/team/create-team`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify(values),
-      //   }
-      // );
-      // const data = await response.json();
-      // toast.success(data.message);
-    const data = { subdomain: "hulhal" }; // mock data
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/team/create-team`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+      const data = await response.json();
+      toast.success(data.message);
+    // const data = { subdomain: "hulhal" }; // mock data
       const currentHost = window.location.hostname;
       const currentPort = window.location.port
         ? `:${window.location.port}`
