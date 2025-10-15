@@ -5,9 +5,8 @@ import prisma from "@repo/db/client";
 
 export const getUserProfile = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userID=req.user?.id
 
 
-    res.status(200).json({ success: true, data: "req" });
+    res.status(200).json({ success: true, data: {...req.user,role:req.role} });
   }
 );

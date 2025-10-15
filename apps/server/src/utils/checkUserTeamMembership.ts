@@ -6,6 +6,7 @@ import prisma from "@repo/db/client";
  * @param subdomain - team subdomain
  * @returns boolean - true if user is in team, else false
  */
+
 export const checkUserTeamMembership = async (
   email: string,
   subdomain: string

@@ -1,5 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { User } from "../slices/authSlice";
+
+interface UserResponse {
+  success: boolean;
+  data: User|null;
+}
+
 const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -8,8 +14,10 @@ const authApi = createApi({
   }),
   tagTypes: ["User"],
 
+
   endpoints: (builder) => ({
-    fetchProfile: builder.query<User, void>({
+    
+    fetchProfile: builder.query<UserResponse, void>({
       query: () => ({
         url: "/user/profile",
         method: "GET",

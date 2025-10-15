@@ -6,6 +6,7 @@ import { Label } from "@repo/ui/components/label";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import authApi from "../../state/api/userApi"
 import {
   Card,
   CardContent,
@@ -17,9 +18,10 @@ import { Alert, AlertDescription } from "@repo/ui/components/alert";
 // import  AuthLayout from "../layouts/AuthLayout"
 import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { authClient } from "../../lib/authClient";
-
+import { useAppDispatch } from "../../state/hook";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { addUser } from "../../state/slices/authSlice";
 type Inputs = {
   email: string;
   password: string;
@@ -27,6 +29,7 @@ type Inputs = {
 };
 
 function LoginPage() {
+  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
 const navigate = useNavigate()
   const {
@@ -38,15 +41,20 @@ const navigate = useNavigate()
   const onSubmit: SubmitHandler<Inputs> = async ({email,password}) => {
     
       const res = await authClient.signIn.email({ email, password });
-      console.log(res)
       if(res.error){
         toast.error(res.error.message)
         return
       }
-      if(res.data){
-        toast.success("Login successful!")
-        navigate("/")
-      }
+  if (res.data) {
+    toast.success("Login successful!");
+
+    // Optionally fetch and store user profile here — import your API slice and user actions.
+    // Example:
+    const userProfile = await dispatch(authApi.endpoints.fetchProfile.initiate()).unwrap();
+    dispatch(addUser(userProfile.data));
+
+    navigate("/");
+  }
 
 
   

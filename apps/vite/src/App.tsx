@@ -1,15 +1,30 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useEffect, useState } from "react";
-import {useAppDispatch,useAppSelector} from "./state/hook";
-import {useFetchProfileQuery}from "./state/api/userApi"
-import {addUser,removeUser,setIsValidTeam,setLoading,setSubDomain} from "./state/slices/authSlice"
-
-
+import { useAppDispatch, useAppSelector } from "./state/hook";
+import { useFetchProfileQuery } from "./state/api/userApi";
+import {
+  addUser,
+  removeUser,
+  setIsValidTeam,
+  setLoading,
+  setSubDomain,
+} from "./state/slices/authSlice";
+import authApi from "./state/api/userApi";
 import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
+import MainLayout from "./layouts/MainLayout";
+
 import LoadingPage from "@repo/ui/components/custom/LoadingPage";
 import TeamNotFound from "@repo/ui/components/custom/TeamNotFound";
 // import NotFoundPage from "./pages/NotFoundPage";
+
+const DashboardPage = lazy(
+  () => import("./pages/subDomainAdmin/DashboardPage")
+); //admin main page
+const TeamPage = lazy(() => import("./pages/subDomainAdmin/TeamPage")); //admin main page
+const TeamSettingsPage = lazy(
+  () => import("./pages/subDomainAdmin/TeamSettingsPage")
+); //admin main page
 
 const LandingPage = lazy(() => import("./pages/mainDomain/LandingPage"));
 const CreateTeamPage = lazy(() => import("./pages/mainDomain/CreateTeamPage"));
@@ -31,12 +46,16 @@ const PublicPostViewPage = lazy(
 const RouteNotFound = lazy(() => import("./pages/notfound/RouteNotFound"));
 
 function App() {
-  const dispatch=useAppDispatch();
-  const loadingState=useAppSelector((state)=>state.auth.isLoading);
-  const subDomain=useAppSelector((state)=>state.auth.subDomain);
-  const isValidTeam=useAppSelector((state)=>state.auth.isValidTeam);
+  const dispatch = useAppDispatch();
+  const loadingState = useAppSelector((state) => state.auth.isLoading);
+  const subDomain = useAppSelector((state) => state.auth.subDomain);
+  const isValidTeam = useAppSelector((state) => state.auth.isValidTeam);
 
-
+  const adminRoutes = [
+    { path: "dashboard", element: <DashboardPage /> },
+    { path: "team", element: <TeamPage /> },
+    { path: "settings", element: <TeamSettingsPage /> },
+  ];
   const subDomainAuthRoutes = [
     { path: "login", element: <LoginPage /> },
     { path: "signup", element: <SignupPage /> },
@@ -55,12 +74,24 @@ function App() {
   const mainDomainAuthRoutes = [
     { path: "create-team", element: <CreateTeamPage /> },
   ];
-  const { data: userProfile } = useFetchProfileQuery();
-  console.log("User Profile:", userProfile);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await dispatch(
+          authApi.endpoints.fetchProfile.initiate()
+        ).unwrap();
+        dispatch(addUser(res?.data ?? null));
+      } catch (error) {
+        dispatch(removeUser());
+        // console.error("Error fetching profile:", error);
+      }
+    };
+    if (subDomain) {
+      fetchProfile();
+    }
+  }, [subDomain]);
 
   useEffect(() => {
-
-
     const hostname = window.location.hostname;
     const parts = hostname.split(".");
     const baseDomain = "blogapp.tech";
@@ -80,7 +111,9 @@ function App() {
           dispatch(setIsValidTeam(false));
         })
         .finally(() => dispatch(setLoading(false)));
-    } 
+    } else {
+      dispatch(setLoading(false));
+    }
   }, []);
 
   if (loadingState) {
@@ -88,10 +121,10 @@ function App() {
   }
 
   return (
-    <Suspense fallback={<LoadingPage />}>
-      <BrowserRouter>
-        {subDomain ? (
-          isValidTeam ? (
+    <BrowserRouter>
+      {subDomain ? (
+        isValidTeam ? (
+          <Suspense fallback={<LoadingPage />}>
             <Routes>
               <Route path="/" element={<PublicLayout />}>
                 {subDomainPublicRoutes.map((route, index) => (
@@ -111,6 +144,7 @@ function App() {
               </Route>
 
               <Route path="/" element={<AuthLayout />}>
+                {/* login and join routes */}
                 {subDomainAuthRoutes.map((route, index) => (
                   <Route
                     key={index}
@@ -119,14 +153,29 @@ function App() {
                   />
                 ))}
               </Route>
+
+              <Route path="/admin" element={<MainLayout />}>
+                {adminRoutes.map((route, index) => (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={route.element}
+                  />
+                ))}
+              </Route>
+
               <Route path="*" element={<RouteNotFound />} />
             </Routes>
-          ) : (
+          </Suspense>
+        ) : (
+          <Suspense fallback={<LoadingPage />}>
             <Routes>
               <Route path="*" element={<TeamNotFound />} />
             </Routes>
-          )
-        ) : (
+          </Suspense>
+        )
+      ) : (
+        <Suspense fallback={<LoadingPage />}>
           <Routes>
             {mainDomainPublicRoutes.map((route, index) => (
               <Route key={index} path={route.path} element={route.element} />
@@ -138,9 +187,9 @@ function App() {
             </Route>
             <Route path="*" element={<RouteNotFound />} />
           </Routes>
-        )}
-      </BrowserRouter>
-    </Suspense>
+        </Suspense>
+      )}
+    </BrowserRouter>
   );
 }
 

@@ -5,6 +5,10 @@ export interface User {
   email: string;
   image?: string;
   emailVerified?: boolean;
+  jobTitle?: string | null
+  createdAt: string|Date;
+  updatedAt: string|Date;
+  role:string;
 }
 const initialState: {
   user: User | null;
