@@ -1,14 +1,21 @@
 import { PrismaClient } from "../generated/prisma/index.js";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+// Extend NodeJS global type to store Prisma instance
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined;
+}
 
+// Use existing global in dev, or create a new instance
 export const prisma =
-  globalForPrisma.prisma ??
+  global.prisma ??
   new PrismaClient({
-    // log: ["query", "error", "warn"],
-    log: [ "error", "warn"],
+    log: ["error", "warn"], // add "query" if you want query logging
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// Prevent multiple instances in development (hot reload)
+if (process.env.NODE_ENV !== "production") {
+  global.prisma = prisma;
+}
 
 export default prisma;
