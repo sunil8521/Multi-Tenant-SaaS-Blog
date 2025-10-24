@@ -15,24 +15,29 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  fullName  String
-    image         String?
-      emailVerified Boolean     @default(false)
+  id            String  @id @default(cuid())
+  email         String  @unique
+  fullName      String
+  image         String?
+  emailVerified Boolean @default(false)
 
-  jobTitle  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  jobTitle    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  accounts    Account[]
+  sessions    Session[]
+  teams       Team[]    @relation("TeamOwner")
+  invitesSent Invite[]  @relation("invitedBy")
 
-    accounts      Account[]
-  sessions      Session[]
-  teams     Team[]   @relation("TeamOwner")
-    memberships TeamMember[]
-
+  memberships TeamMember[]
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
 }
+
 model Account {
-  id                    String   @id @default(cuid())
+  id                    String    @id @default(cuid())
   userId                String
   accountId             String
   providerId            String
@@ -43,23 +48,22 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   idToken               String?
-  user                  User     @relation(fields: [userId], references: [id])
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  user                  User      @relation(fields: [userId], references: [id])
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model Session {
-  id         String   @id @default(cuid())
-  userId     String
-  token      String   @unique
-  expiresAt  DateTime
-  ipAddress  String?
-  userAgent  String?
-  user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
 
 model Verification {
   id         String   @id @default(cuid())
@@ -69,6 +73,7 @@ model Verification {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
 model Team {
   id          String       @id @default(cuid())
   name        String
@@ -80,24 +85,123 @@ model Team {
   ownerId     String
   owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
   members     TeamMember[]
+  invites     Invite[]
+
+  posts Post[]
+
   @@index([ownerId])
   @@index([subdomain])
 }
+
 model TeamMember {
-  id      String   @id @default(cuid())
-  teamId  String
-  userId  String
-  role    Role     @default(MEMBER)
-  team    Team     @relation(fields: [teamId], references: [id])
-  user    User     @relation(fields: [userId], references: [id])
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  role   Role   @default(MEMBER)
+  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([teamId, userId]) // one user can be in a team only once
   @@index([userId])
   @@index([teamId])
 }
 
+model Invite {
+  id          String    @id @default(cuid())
+  email       String
+  teamId      String
+  role        Role      @default(MEMBER)
+  token       String    @unique
+  message     String?
+  invitedById String
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  invitedBy   User      @relation("invitedBy", fields: [invitedById], references: [id])
+  team        Team      @relation(fields: [teamId], references: [id])
+
+  @@index([teamId])
+  @@index([email])
+}
+
 enum Role {
   ADMIN
   MEMBER
-  WRITER
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String
+  excerpt     String?
+  content     String
+  image       String?
+  published   Boolean   @default(false)
+  readTime    String? // e.g. "8 min read"
+  publishedAt DateTime?
+  featured    Boolean   @default(false) // ✅ manually marked as featured
+  authorId    String
+  teamId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author    User       @relation(fields: [authorId], references: [id])
+  team      Team       @relation(fields: [teamId], references: [id])
+  tags      PostTag[]
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+
+  @@unique([slug, teamId])
+  @@index([teamId])
+  @@index([authorId])
+}
+
+model PostTag {
+  id     String @id @default(cuid())
+  name   String
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+
+  @@index([name])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  postId    String
+  parentId  String? // for replies (nested comments)
+  createdAt DateTime @default(now())
+
+  author  User      @relation(fields: [authorId], references: [id])
+  post    Post      @relation(fields: [postId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([parentId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId]) // prevent double-like
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId]) // prevent multiple bookmarks
 }

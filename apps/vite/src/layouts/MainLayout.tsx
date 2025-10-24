@@ -54,7 +54,7 @@ export default function MainLayout() {
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <FileText className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-bold">TeamBlog</span>
+          <span className="text-xl font-bold">TeamLog</span>
         </Link>
       </div>
       <nav className="flex-1 space-y-1 px-3">

@@ -371,7 +371,7 @@ export default function TeamSignupForm({ className }: { className?: string }) {
                     htmlFor="terms"
                     className="text-sm font-normal text-muted-foreground"
                   >
-                    I agree to the Terms & Conditions (optional)
+                    I agree to the Terms & Conditions
                   </Label>
                 </div>
 

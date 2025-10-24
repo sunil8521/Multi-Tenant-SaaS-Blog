@@ -14,7 +14,7 @@ export default defineConfig({
     alias: {
       "@repo/ui": path.resolve(__dirname, "../../packages/ui/src"),
     },
-  },
+  },  
   css: {
     postcss: path.resolve(__dirname, "./postcss.config.mjs"),
   },

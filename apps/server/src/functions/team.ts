@@ -2,8 +2,10 @@ import prisma from "@repo/db/client";
 import type { Request, Response, NextFunction } from "express";
 import { TryCatch } from "../middlewares/error.js";
 import ErrorHandler from "../utils/errorHandler.js";
-import { hashedPassword } from "../utils/passwordHandle.js";
 import {auth} from "../lib/auth.js"
+import {sendEmailJob} from "../utils/jobs/email/queue.js"
+import {welcomeEmailTemplate} from "../utils/constants.js"
+
 const ctx = await auth.$context;
 
 
@@ -19,7 +21,6 @@ export const CreateTeam = TryCatch(async (req: Request, res: Response, next: Nex
   } = req.body;
 
   // ✅ Hash the password securely
-  // const hashedPass = await hashedPassword(confirmPassword);
 const hashedPass = await ctx.password.hash(confirmPassword);
 
   const result = await prisma.$transaction(async (tx) => {
@@ -63,7 +64,11 @@ const hashedPass = await ctx.password.hash(confirmPassword);
 
     return { teamData, userData };
   });
-
+await sendEmailJob({
+  to: email,
+  subject: "Welcome to Our Team Management App!",
+  html: welcomeEmailTemplate(teamName, subdomain, "http://localhost:3000", email, fullName),
+})
   // ✅ 5. Send response
   res.status(201).json({
     success: true,

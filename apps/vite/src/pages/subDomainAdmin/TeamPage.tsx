@@ -68,7 +68,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-
+import { useSendInviteMutation } from "../../state/api/userApi";
 // Mock data
 const teamMembers = [
   {
@@ -154,8 +154,9 @@ export default function TeamPage() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const emailsRef = useRef<HTMLTextAreaElement>(null);
+  const [sendInvite, { isLoading: isSending, isError }] =
+    useSendInviteMutation();
+  const emailsRef = useRef<HTMLInputElement>(null);
   const roleRef = useRef<string>("MEMBER"); // for select
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
@@ -233,29 +234,24 @@ export default function TeamPage() {
   const handleSendInvites = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const emails = emailsRef.current?.value.trim() || "";
+    const email = emailsRef.current?.value.trim() || "";
     const message = messageRef.current?.value.trim() || "";
     const role = roleRef.current;
 
-    const emailList = emails
-      .split(",")
-      .map((email) => email.trim())
-      .filter(Boolean);
 
-    console.log({ emailList, role, message });
+
 
     // 🔹 Example: Send to backend
     try {
-      // await fetch("/api/invite", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ emails: emailList, role, message }),
-      // });
+      const res=await sendInvite({email,role,message}).unwrap()
+      
 
+
+     toast.success(res.message); 
       setIsInviteDialogOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Failed to send invites");
+      toast.error(err.data.message);
     }
   };
 
@@ -317,11 +313,11 @@ export default function TeamPage() {
                   <Label className="mb-1" htmlFor="emails">
                     Email Addresses
                   </Label>
-                  <Textarea
-                    id="emails"
-                    placeholder="Enter email addresses separated by commas..."
+                  <Input
+                    required
+                    type="email"
+                    placeholder="Enter email address"
                     ref={emailsRef}
-                    rows={3}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Separate multiple email addresses with commas
@@ -342,11 +338,11 @@ export default function TeamPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="MEMBER">
-                        Member - Can view posts
+                        Member - Can view posts and write posts
                       </SelectItem>
-                      <SelectItem value="WRITER">
+                      {/* <SelectItem value="WRITER">
                         Writer - Can create and edit own posts
-                      </SelectItem>
+                      </SelectItem> */}
 
                       <SelectItem value="ADMIN">Admin - Full access</SelectItem>
                     </SelectContent>

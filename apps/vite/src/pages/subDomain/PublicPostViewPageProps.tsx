@@ -66,11 +66,10 @@ const mockPost = {
   },
   publishedAt: "2024-01-15",
   readTime: "8 min read",
-  tags: ["Remote Work", "Collaboration", "Technology", "Leadership"],
+  tags: ["Remote Work", "Collaboration", "Technology"],
   likes: 234,
   comments: 45,
-  bookmarks: 89,
-  image: "/placeholder-imkik.png",
+  image: "https://placehold.co/600x400?text=Hello+World",
 }
 
 const relatedPosts = [

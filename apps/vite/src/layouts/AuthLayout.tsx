@@ -13,7 +13,7 @@ import { FileText } from "lucide-react"
             <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
               <FileText className="h-7 w-7 text-primary-foreground" />
             </div>
-            <span className="text-3xl font-bold">TeamBlog</span>
+            <span className="text-3xl font-bold">TeamLog</span>
           </div>
           <h1 className="text-4xl font-bold text-balance mb-4">Create Team Blogs Like Medium</h1>
           <p className="text-xl text-muted-foreground text-balance">
@@ -30,7 +30,7 @@ import { FileText } from "lucide-react"
               <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
                 <FileText className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold">TeamBlog</span>
+              <span className="text-2xl font-bold">TeamLog</span>
             </Link>
           </div>
           <Outlet />

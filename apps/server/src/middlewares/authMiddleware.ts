@@ -22,6 +22,8 @@ declare global {
       role?: string;
       teamId?: string;
       subdomain?: string;
+      teamName?: string;
+
     }
   }
 }
@@ -85,6 +87,8 @@ export const authMiddleware = TryCatch(
     req.user = user;
     req.role = membership.role;
     req.teamId = membership.teamId;
+    req.teamName = membership.team.name;
+    
     req.subdomain = subdomain;
 
     next();

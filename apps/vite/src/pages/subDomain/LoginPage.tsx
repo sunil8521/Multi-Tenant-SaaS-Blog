@@ -6,7 +6,7 @@ import { Label } from "@repo/ui/components/label";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import authApi from "../../state/api/userApi"
+import authApi from "../../state/api/userApi";
 import {
   Card,
   CardContent,
@@ -31,33 +31,32 @@ type Inputs = {
 function LoginPage() {
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async ({email,password}) => {
-    
-      const res = await authClient.signIn.email({ email, password });
-      if(res.error){
-        toast.error(res.error.message)
-        return
-      }
-  if (res.data) {
-    toast.success("Login successful!");
+  const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
+    const res = await authClient.signIn.email({ email, password });
 
-    // Optionally fetch and store user profile here — import your API slice and user actions.
-    // Example:
-    const userProfile = await dispatch(authApi.endpoints.fetchProfile.initiate()).unwrap();
-    dispatch(addUser(userProfile.data));
+    if (res.error) {
+      toast.error(res.error.message);
+      return;
+    }
+    if (res.data) {
+      toast.success("Login successful!");
 
-    navigate("/");
-  }
+      // Optionally fetch and store user profile here — import your API slice and user actions.
+      // Example:
+      const userProfile = await dispatch(
+        authApi.endpoints.fetchProfile.initiate()
+      ).unwrap();
+      dispatch(addUser(userProfile.data));
 
-
-  
+      navigate("/");
+    }
   };
 
   return (
@@ -112,13 +111,15 @@ const navigate = useNavigate()
           {/* Remember Me & Forgot Password */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                defaultChecked={false}
-                {...register("rememberMe", { setValueAs: (v) => !v })}
+            
+              <input
+                id="rememberMe"
+                type="checkbox"
+                {...register("rememberMe", { required: false })}
               />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
+
+              <Label htmlFor="rememberMe" className="text-sm">
+                Remember me{" "}
               </Label>
             </div>
             <Link
@@ -154,13 +155,7 @@ const navigate = useNavigate()
         </div>
 
         {/* Demo Credentials */}
-        <div className="mt-4 p-3 bg-muted rounded-lg">
-          <p className="text-xs text-muted-foreground text-center">
-            Demo: Use{" "}
-            <code className="bg-background px-1 rounded">demo@example.com</code>{" "}
-            and <code className="bg-background px-1 rounded">password</code>
-          </p>
-        </div>
+      
       </CardContent>
     </Card>
   );

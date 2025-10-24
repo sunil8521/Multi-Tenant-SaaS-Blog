@@ -12,21 +12,21 @@ import { useState } from "react"
 // Mock data for demonstration
 const featuredPosts = [
   {
-    id: "1",
-    title: "The Future of Remote Team Collaboration",
-    excerpt:
-      "Exploring how distributed teams are reshaping the way we work together, communicate, and build products in the digital age.",
-    author: {
-      name: "Sarah Chen",
-      avatar: "/sarah-chen-avatar.jpg",
-      username: "sarahc",
-    },
-    publishedAt: "2024-01-15",
-    readTime: "8 min read",
-    tags: ["Remote Work", "Collaboration", "Technology"],
-    likes: 234,
-    comments: 45,
-    image: "/placeholder-imkik.png",
+      id: "1",
+      title: "The Future of Remote Team Collaboration",
+      excerpt:
+        "Exploring how distributed teams are reshaping the way we work together, communicate, and build products in the digital age.",
+      author: {
+        name: "Sarah Chen",
+        avatar: "/sarah-chen-avatar.jpg",
+        username: "sarahc",
+      },
+      publishedAt: "2024-01-15",
+      readTime: "8 min read",
+      tags: ["Remote Work", "Collaboration", "Technology"],
+      likes: 234,
+      comments: 45,
+      image: "https://placehold.co/600x400?text=Hello+Moto",
     featured: true,
   },
   {
@@ -43,7 +43,7 @@ const featuredPosts = [
     tags: ["Design", "Systems", "UI/UX"],
     likes: 189,
     comments: 32,
-    image: "/placeholder-5tixe.png",
+    image: "https://placehold.co/600x400?text=Luade+bata",
   },
 ]
 
@@ -63,7 +63,7 @@ const allPosts = [
     tags: ["TypeScript", "React", "Development"],
     likes: 156,
     comments: 28,
-    image: "/placeholder-grs1k.png",
+    image: "https://placehold.co/600x400?text=Hello+World",
   },
   {
     id: "4",
@@ -146,7 +146,7 @@ const trendingTags = [
         </div>
 
         {/* Featured Posts */}
-        {featuredPosts.length > 0 && (
+        {/* {featuredPosts.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center mb-6">
               <TrendingUp className="mr-2 h-5 w-5 text-blue-600" />
@@ -209,7 +209,7 @@ const trendingTags = [
               ))}
             </div>
           </section>
-        )}
+        )} */}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}

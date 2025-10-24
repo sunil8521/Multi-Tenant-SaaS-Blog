@@ -1,24 +1,22 @@
+import "dotenv/config";
+import "./utils/jobs/email/worker.js"; // Start the email worker
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.js";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import prisma from "@repo/db/client";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 
 //route
-import userRoutes from "./routes/user.routes.js"
-import teamRoutes from "./routes/team.routes.js"
-import postRoutes from "./routes/post.routes.js"
+import userRoutes from "./routes/user.routes.js";
+import teamRoutes from "./routes/team.routes.js";
+import postRoutes from "./routes/post.routes.js";
 
 
-dotenv.config({ path: "./.env" ,quiet: true});
-
-export const envMode = process.env.NODE_ENV?.trim() || "DEVELOPMENT";
-const port: number = Number(process.env.PORT ?? 3000);
-
+export const envMode = process.env.NODE_ENV;
+const port: number = Number(process.env.PORT);
 const app = express();
 
 app.use(
@@ -36,7 +34,8 @@ app.use(
       if (!origin) return callback(null, true); // allow server-side requests
 
       // Allow main + subdomains of blogapp.tech
-      const allowedPattern = /^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
+      const allowedPattern =
+        /^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
 
       if (allowedPattern.test(origin)) {
         callback(null, true);
@@ -45,22 +44,23 @@ app.use(
       }
     },
     credentials: true, // ✅ Needed for cookies (BetterAuth sessions),
-  methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
-  // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 204,
+    methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
+    // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    optionsSuccessStatus: 204,
   })
 );
 // app.use(morgan("dev"));
 
-app.get("/", (req, res) => {``
+app.get("/", (req, res) => {
+  ``;
   res.send("Hello, World!");
 });
 
 // your routes here
 app.all(/^\/api\/auth(?:\/.*)?$/, toNodeHandler(auth));
-app.use("/api/user",userRoutes)
-app.use("/api/team",teamRoutes)
-app.use("/api/post",postRoutes)
+app.use("/api/user", userRoutes);
+app.use("/api/team", teamRoutes);
+app.use("/api/post", postRoutes);
 
 //404
 app.get(/.*/, (req, res) => {
@@ -69,7 +69,6 @@ app.get(/.*/, (req, res) => {
     message: "Page not found",
   });
 });
-
 
 async function startServer() {
   try {
