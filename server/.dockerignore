@@ -1,0 +1,36 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Local environment
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+logs
+*.log
+
+# Build caches
+dist
+build
+
+# OS / Editor files
+.DS_Store
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+
+# Typescript build output
+*.tsbuildinfo
+
+# Docker files
+Dockerfile
+docker-compose.yml
