@@ -305,6 +305,7 @@ function PublicBlogPage() {
         {/* Sidebar */}
         <div className="space-y-8">
           {/* Trending Tags */}
+          {(trendingTags?.length ?? 0) > 0 && (
           <Card>
             <CardContent className="p-6">
               <h3 className="font-bold mb-4">Trending Tags</h3>
@@ -321,7 +322,7 @@ function PublicBlogPage() {
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </Card>)}
 
           {/* Newsletter */}
           <Card>

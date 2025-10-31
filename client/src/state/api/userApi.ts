@@ -25,6 +25,22 @@ interface VerifyInviteResponse {
   };
 }
 
+
+//---------------
+interface SignupAndJoinTeamRequest {
+  password: string;
+  email: string;
+  jobTitle: string;
+  role: string;
+  teamId: string;
+  fullName: string;
+}
+
+interface SignupAndJoinTeamResponse {
+  success: boolean;
+  message: string;
+}
+//---------------
 const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -56,6 +72,15 @@ const authApi = createApi({
         body: data,
       }),
     }),
+
+    SignupAndJoinTeam: builder.mutation<SignupAndJoinTeamResponse, SignupAndJoinTeamRequest>({
+      query: (data: SignupAndJoinTeamRequest) => ({
+        url: "/user/signup-join",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
   }),
 });
 
@@ -63,5 +88,6 @@ export const {
   useFetchProfileQuery,
   useSendInviteMutation,
   useVerifyInviteMutation,
+  useSignupAndJoinTeamMutation,
 } = authApi;
 export default authApi;

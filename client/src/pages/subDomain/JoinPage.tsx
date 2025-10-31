@@ -25,22 +25,26 @@ import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { useVerifyInviteMutation } from "../../state/api/userApi";
 import { Checkbox } from "@/components/ui/checkbox";
+import {useSignupAndJoinTeamMutation} from "../../state/api/userApi"
 
+interface JoinFormValues {
+  email: string;
+  fullName: string;
+  jobTitle?: string;
+  password: string;
+  confirmPassword: string;
+  terms: boolean;
+}
 export default function JoinPage() {
   const [verifyInvite, { isLoading, data, isError }] =
     useVerifyInviteMutation();
+    const [signupAndJoinTeam, { isLoading: signUpLoading }] =
+    useSignupAndJoinTeamMutation();
+    console.log(data)
   const [searchParams] = useSearchParams();
   const token = searchParams.get("c");
   const [showPassword, setShowPassword] = useState(false);
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
-  interface JoinFormValues {
-    email: string;
-    fullName: string;
-    jobTitle?: string;
-    password: string;
-    confirmPassword: string;
-    terms: boolean;
-  }
   const {
     register,
     handleSubmit,
@@ -69,7 +73,22 @@ export default function JoinPage() {
   }, [token]);
 
   const onSubmit = async (formData: JoinFormValues): Promise<void> => {
-    console.log(formData);
+    try{
+ const res=await signupAndJoinTeam({
+      email: formData.email,
+      jobTitle: formData.jobTitle||"" ,
+      password: formData.password,
+      role: data?.data.role as string,
+      teamId: data?.data.teamId as string,
+      fullName: formData.fullName,
+    }).unwrap();
+    toast.success(res.message);
+    }catch(error){
+      toast.error("Failed to sign up and join the team. Please try again.");
+      
+    }
+  
+
   };
 
   const handleJoinTeam = async () => {

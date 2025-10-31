@@ -206,4 +206,86 @@ export const userInviteTemplate = (teamName, teamDomain, inviteLink) => {
 </html>
 `;
 };
+export const teamMemberWelcomeTemplate = (fullName, teamName, dashboardUrl) => `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome to ${teamName}</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #000;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 32px;
+  }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 600;
+  }
+  p {
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .button {
+    display: inline-block;
+    background: #111;
+    padding: 12px 22px;
+    color: #fff !important;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-top: 20px;
+  }
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+  }
+</style>
+
+</head>
+<body>
+<div class="container">
+
+  <h1>Welcome to ${teamName}! 🎉</h1>
+
+  <p>Hi ${fullName},</p>
+
+  <p>
+    ${`You've been added`} to the <strong>${teamName}</strong> workspace.
+  </p>
+
+  <p>
+    You can now start collaborating, writing posts, and contributing to the team workspace.
+  </p>
+
+  <a href="${dashboardUrl}" class="button">Open Dashboard</a>
+
+  <p style="margin-top: 22px;">
+    Have questions? Reply to this email — we're here to help 😊
+  </p>
+
+  <div class="footer">
+    <p>Welcome to the team!</p>
+    <p>— TeamLog Team</p>
+  </div>
+
+</div>
+</body>
+</html>`;
 //# sourceMappingURL=constants.js.map
