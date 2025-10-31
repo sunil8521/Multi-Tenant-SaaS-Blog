@@ -86,7 +86,6 @@ export default function TeamSignupForm({ className }: { className?: string }) {
       );
       const data = await response.json();
       toast.success(data.message);
-    // const data = { subdomain: "hulhal" }; // mock data
       const currentHost = window.location.hostname;
       const currentPort = window.location.port
         ? `:${window.location.port}`

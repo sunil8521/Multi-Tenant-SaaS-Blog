@@ -61,9 +61,7 @@ async function startServer() {
         await prisma.$connect(); // Try connecting to the database
         console.log("\x1b[33mDatabase connected successfully!\x1b[0m");
         app.listen(port, "0.0.0.0", () => {
-            // console.log(
-            //   `\x1b[33mServer is working on Port: ${port} in ${envMode} Mode.\x1b[0m`
-            // );
+            console.log(`\x1b[33mServer is working on Port: ${port} in ${envMode} Mode.\x1b[0m`);
         });
     }
     catch (error) {

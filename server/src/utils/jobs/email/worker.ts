@@ -78,19 +78,6 @@ transporter.verify((error) => {
   }
 })();
 
-process.on("SIGINT", () => {
-  console.log("🛑 Shutting down worker gracefully...");
-  process.exit(0);
-});
-
-
-
-
-
-
-
-
-
 
 
 

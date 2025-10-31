@@ -61,10 +61,6 @@ transporter.verify((error) => {
         }
     }
 })();
-process.on("SIGINT", () => {
-    console.log("🛑 Shutting down worker gracefully...");
-    process.exit(0);
-});
 // import { Worker } from "bullmq";
 // import nodemailer from "nodemailer";
 // import { createRedisConnection } from "../../redis.js";
