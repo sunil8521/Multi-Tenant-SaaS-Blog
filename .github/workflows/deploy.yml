@@ -6,42 +6,51 @@ on:
       - main
 
 env:
-  AWS_REGION: ap-south-1              # Change to your AWS region
-  ECR_REPOSITORY: multi-tenant-saas-blog
+  AWS_REGION: us-east-1                 # ✅ Your AWS region
+  ECR_REPOSITORY: saas-hub              # ✅ Your ECR repo name
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ 1. Get your project files
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # ✅ 2. Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # ✅ 3. Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # ✅ 4. Build Docker image from /server folder
       - name: Build Docker image from /server
         run: |
           cd server
           docker build -t $ECR_REPOSITORY:latest .
 
+      # ✅ 5. Tag image using registry output
       - name: Tag Docker image
         run: |
-          docker tag $ECR_REPOSITORY:latest ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker tag $ECR_REPOSITORY:latest \
+          ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+      # ✅ 6. Push image to AWS ECR
       - name: Push Docker image to ECR
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+      # ✅ 7. Final success log
       - name: Echo pushed image info
         run: |
-          echo "✅ Image pushed successfully!"
-          echo "🔗 Image URL: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
+          echo "✅ Docker Image pushed successfully!"
+          echo "🔗 Image URL:"
+          echo "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
