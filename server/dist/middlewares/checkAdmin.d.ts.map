@@ -1,0 +1,1 @@
+{"version":3,"file":"checkAdmin.d.ts","sourceRoot":"","sources":["../../src/middlewares/checkAdmin.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAG/D,eAAO,MAAM,UAAU,GAAI,MAAK,MAAM,MAC5B,KAAK,OAAO,EAAE,KAAK,QAAQ,EAAE,MAAM,YAAY,SAQxD,CAAC"}

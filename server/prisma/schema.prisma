@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model User {
+  id            String  @id @default(cuid())
+  email         String  @unique
+  fullName      String
+  image         String?
+  emailVerified Boolean @default(false)
+
+  jobTitle    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  accounts    Account[]
+  sessions    Session[]
+  teams       Team[]    @relation("TeamOwner")
+  invitesSent Invite[]  @relation("invitedBy")
+
+  memberships TeamMember[]
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  user                  User      @relation(fields: [userId], references: [id])
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Team {
+  id          String       @id @default(cuid())
+  name        String
+  subdomain   String       @unique
+  description String?
+  category    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  ownerId     String
+  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     TeamMember[]
+  invites     Invite[]
+
+  posts Post[]
+
+  @@index([ownerId])
+  @@index([subdomain])
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  role   Role   @default(MEMBER)
+  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId]) // one user can be in a team only once
+  @@index([userId])
+  @@index([teamId])
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  email       String
+  teamId      String
+  role        Role      @default(MEMBER)
+  token       String    @unique
+  message     String?
+  invitedById String
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  invitedBy   User      @relation("invitedBy", fields: [invitedById], references: [id])
+  team        Team      @relation(fields: [teamId], references: [id])
+
+  @@index([teamId])
+  @@index([email])
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String
+  excerpt     String?
+  content     String
+  image       String?
+  published   Boolean   @default(false)
+  readTime    String? // e.g. "8 min read"
+  publishedAt DateTime?
+  featured    Boolean   @default(false) // ✅ manually marked as featured
+  authorId    String
+  teamId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author    User       @relation(fields: [authorId], references: [id])
+  team      Team       @relation(fields: [teamId], references: [id])
+  tags      PostOnTag[]
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+
+  @@unique([slug, teamId])
+  @@index([teamId])
+  @@index([authorId])
+}
+
+model Tag {
+  id           String   @id @default(cuid())
+  name         String
+  teamId       String
+  createdAt    DateTime @default(now())
+  usageCount   Int      @default(0) // 👈 Tracks how many posts use this tag
+  posts        PostOnTag[]
+
+  @@unique([name, teamId]) // same tag can't exist twice in the same team
+  @@index([teamId])
+  @@index([usageCount]) // helpful if you want to sort tags by popularity
+}
+
+model PostOnTag {
+  postId String
+  tagId  String
+
+  post   Post @relation(fields: [postId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  authorId  String
+  postId    String
+  parentId  String? // for replies (nested comments)
+  createdAt DateTime @default(now())
+
+  author  User      @relation(fields: [authorId], references: [id])
+  post    Post      @relation(fields: [postId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([parentId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId]) // prevent double-like
+}
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId]) // prevent multiple bookmarks
+}
+
