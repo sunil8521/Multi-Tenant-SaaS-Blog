@@ -388,7 +388,65 @@ export const CreatePostReply = TryCatch(async (req, res, next) => {
 }); // add reply to a comment
 export const UpdateMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
-}); //TODO: handle update post logic
+    const userId = req.user?.id;
+    const teamId = req.teamId;
+    const { title, content, image, tags } = req.body; // tags = string[]
+    if (!slug) {
+        return next(new ErrorHandler(400, "Slug is required"));
+    }
+    // 1. Get post
+    const post = await prisma.post.findFirst({
+        where: { slug, teamId: teamId, }
+    });
+    if (!post) {
+        return next(new ErrorHandler(404, "Post not found in your team"));
+    }
+    // 2. Authorization check
+    if (post.authorId !== userId) {
+        return next(new ErrorHandler(403, "Not authorized to update this post"));
+    }
+    // 3. If title changed, generate new slug (optional)
+    let newSlug = post.slug;
+    if (title && title !== post.title) {
+        newSlug = title
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "");
+        // ensure unique slug inside team
+        const slugExists = await prisma.post.findFirst({
+            where: { slug: newSlug, teamId, NOT: { id: post.id } }
+        });
+        if (slugExists) {
+            return next(new ErrorHandler(409, "A post with this title already exists"));
+        }
+    }
+    // 4. Update post
+    const updatedPost = await prisma.post.update({
+        where: { id: post.id },
+        data: {
+            title,
+            slug: newSlug,
+            content,
+            image,
+            updatedAt: new Date()
+        }
+    });
+    // 5. Update tags if provided
+    if (tags && Array.isArray(tags)) {
+        await prisma.postOnTag.deleteMany({ where: { postId: post.id } });
+        await prisma.postOnTag.createMany({
+            data: tags.map((t) => ({
+                postId: post.id,
+                tagId: t // you should validate tags exist or create on fly
+            }))
+        });
+    }
+    return res.status(200).json({
+        success: true,
+        message: "Post updated successfully",
+        data: updatedPost
+    });
+}); //TODO: improve tag handling
 export const GetMyPost = TryCatch(async (req, res, next) => {
     const userId = req.user?.id; // user from auth middleware
     const teamId = req.teamId;
@@ -444,7 +502,37 @@ export const GetMyPost = TryCatch(async (req, res, next) => {
 });
 export const DeleteMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
-}); //TODO: handle delete post logic
+    const userId = req.user?.id;
+    const teamId = req.teamId;
+    // const role = req.user?.; // e.g., admin, editor, member
+    // Ensure slug exists
+    if (!slug) {
+        return next(new ErrorHandler(400, "Slug is required"));
+    }
+    // Find post
+    const post = await prisma.post.findFirst({
+        where: {
+            slug,
+            teamId: teamId,
+        }
+    });
+    if (!post) {
+        return next(new ErrorHandler(404, "Post not found in your team"));
+    }
+    // Authorization: Only owner or admin can delete
+    // if (post.authorId !== userId && role !== "ADMIN") {
+    if (post.authorId !== userId) {
+        return next(new ErrorHandler(403, "Not authorized to delete this post"));
+    }
+    // Delete post
+    await prisma.post.delete({
+        where: { id: post.id }
+    });
+    return res.status(200).json({
+        success: true,
+        message: "Post deleted successfully"
+    });
+});
 export const PresignedUrl = TryCatch(async (req, res, next) => {
     const { filetype } = req.body;
     const filename = `${req.subdomain}/${Date.now()}.${filetype}`;
