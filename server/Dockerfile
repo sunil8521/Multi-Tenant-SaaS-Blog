@@ -4,7 +4,7 @@ FROM node:18-slim
 # Set working directory
 WORKDIR /app
 
-# Copy package files first
+# Copy package files first (better layer caching)
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
 
@@ -15,7 +15,11 @@ RUN pnpm install --prod=false
 # Copy the rest of the project
 COPY . .
 
-# Build TypeScript → JavaScript
+# Pass Prisma environment variable (needed for 'pnpm run generate')
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
+# Generate Prisma client and build TypeScript → JavaScript
 RUN pnpm run generate
 RUN pnpm run build
 
