@@ -6,7 +6,7 @@ import { generateInviteCode } from "../utils/inviteCodeGeneratae.js";
 import { sendEmailJob } from "../utils/jobs/email/queue.js";
 import { userInviteTemplate } from "../utils/constants.js";
 import { auth } from "../lib/auth.js";
-import {teamMemberWelcomeTemplate} from "../utils/constants.js"
+import { teamMemberWelcomeTemplate } from "../utils/constants.js";
 const ctx = await auth.$context;
 
 export const getUserProfile = TryCatch(
@@ -119,102 +119,145 @@ export const verifyInviteToken = TryCatch(
     const user = await prisma.user.findUnique({
       where: { email: invite.email },
     });
+    if (user) {
+      const member = await prisma.teamMember.findUnique({
+        where: {
+          teamId_userId: {
+            teamId: invite.teamId,
+            userId: user.id,
+          },
+        },
+      });
 
-    // 5️⃣ Response handling
-    if (!user) {
+      if (member) {
+        return next(
+          new ErrorHandler(400, "User is already a member of this team")
+        );
+      }
+
+      // 5️⃣ Response handling
+      if (!user) {
+        return res.status(200).json({
+          success: true,
+          signup: true,
+          message: "Valid token, proceed to signup",
+          data: {
+            id: invite.id,  
+            email: invite.email,
+            teamId: invite.teamId,
+            role: invite.role,
+          },
+        });
+      }
+
+      // User exists — direct them to join team
       return res.status(200).json({
         success: true,
-        signup: true,
-        message: "Valid token, proceed to signup",
+        signup: false,
+        message: "Valid token, proceed to join team",
         data: {
+          id: invite.id,
           email: invite.email,
           teamId: invite.teamId,
           role: invite.role,
         },
       });
     }
-
-    // User exists — direct them to join team
-    return res.status(200).json({
-      success: true,
-      signup: false,
-      message: "Valid token, proceed to join team",
-      data: {
-        email: invite.email,
-        teamId: invite.teamId,
-        role: invite.role,
-      },
-    });
   }
 );
 
 export const JoinTeam = TryCatch(
-  async (req: Request, res: Response, Next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, teamId, role,inviteId } = req.body;
+    if (!email || !teamId || !role) {
+      return next(
+        new ErrorHandler(400, "Email, teamId, and role are required")
+      );
+    }
+    // get user id from email
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return next(new ErrorHandler(404, "User not found"));
+    }
+
+    // create team member entry
+    await prisma.teamMember.create({
+      data: {
+        userId: user.id,
+        teamId,
+        role,
+      },
+    });
+
+    // delete invite
+    await prisma.invite.delete({
+      where: { id: inviteId  }});
+     return res.status(200).json({
+      success: true,
+      message: "User successfully joined the team",
+    });
+  }
 );
 
 export const SignupAndJoinTeam = TryCatch(
-  async (req: Request, res: Response, Next: NextFunction) => {
-
-    const { email, fullName, jobTitle, password,role,teamId } = req.body;
-  if (!email || !fullName || !password || !teamId || !role) {
-      return Next(new ErrorHandler(400, "Please provide all required fields"));
-      
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, fullName, jobTitle, password, role, teamId,inviteId } = req.body;
+    if (!email || !fullName || !password || !teamId || !role) {
+      return next(new ErrorHandler(400, "Please provide all required fields"));
     }
-      const team = await prisma.team.findUnique({ where: { id: teamId } });
+    const team = await prisma.team.findUnique({ where: { id: teamId } });
     if (!team) {
-      return Next(new ErrorHandler(404, "Team does not exist"));
+      return next(new ErrorHandler(404, "Team does not exist"));
     }
-      const hashedPass = await ctx.password.hash(password);
+    const hashedPass = await ctx.password.hash(password);
 
-   const result = await prisma.$transaction(async (tx) => {
-        const userData = await tx.user.create({
-          data: {
-            fullName,
-            email,
-            jobTitle: jobTitle,
-          },
-        });
-  
-        await tx.account.create({
-          data: {
-            userId: userData.id,
-            accountId: userData.id, 
-            providerId: "credential",
-            password: hashedPass, 
-          },
-        });
-  
-  
-  
-        await tx.teamMember.create({
-          data: {
-            teamId: teamId,
-            userId: userData.id,
-            role: role,
-          },
-        });
-  
-        return { userData };
+    const result = await prisma.$transaction(async (tx) => {
+      const userData = await tx.user.create({
+        data: {
+          fullName,
+          email,
+          jobTitle: jobTitle,
+        },
       });
 
-         await sendEmailJob({
-            to: email,
-            subject: "Welcome to Our Team Management App!",
-            html: teamMemberWelcomeTemplate(
-              fullName,
-              team.name,
-              `http://${team.subdomain}.localhost:3000`,
-            ),
-          });
+      await tx.account.create({
+        data: {
+          userId: userData.id,
+          accountId: userData.id,
+          providerId: "credential",
+          password: hashedPass,
+        },
+      });
 
-          res.status(201).json({
-            success: true,
-            message: `Sign-up successfully. please login to continue.`,
-            
-          });
-    }
+      await tx.teamMember.create({
+        data: {
+          teamId: teamId,
+          userId: userData.id,
+          role: role,
+        },
+      });
 
+      return { userData };
+    });
+  await prisma.invite.delete({
+      where: { id: inviteId  }});
+    await sendEmailJob({
+      to: email,
+      subject: "Welcome to Our Team Management App!",
+      html: teamMemberWelcomeTemplate(
+        fullName,
+        team.name,
+        `http://${team.subdomain}.localhost:3000`
+      ),
+    });
 
-
-  
+    res.status(201).json({
+      success: true,
+      message: `Sign-up successfully. please login to continue.`,
+    });
+  }
 );

@@ -22,6 +22,7 @@ interface VerifyInviteResponse {
     email: string;
     teamId: string;
     role: string;
+    id:string
   };
 }
 
@@ -34,6 +35,7 @@ interface SignupAndJoinTeamRequest {
   role: string;
   teamId: string;
   fullName: string;
+  inviteId:string
 }
 
 interface SignupAndJoinTeamResponse {
@@ -41,6 +43,18 @@ interface SignupAndJoinTeamResponse {
   message: string;
 }
 //---------------
+
+interface JoinResponse {
+  success: boolean;
+  message?: string;
+}
+interface JoinRequest {
+  email: string;
+  teamId: string;
+  role: string;
+  inviteId:string
+}
+
 const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
@@ -81,6 +95,15 @@ const authApi = createApi({
       }),
     }),
 
+
+    JoinTeam: builder.mutation<JoinResponse, JoinRequest>({
+      query: (data: JoinRequest) => ({
+        url: "/user/join",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
   }),
 });
 
@@ -89,5 +112,6 @@ export const {
   useSendInviteMutation,
   useVerifyInviteMutation,
   useSignupAndJoinTeamMutation,
+  useJoinTeamMutation
 } = authApi;
 export default authApi;

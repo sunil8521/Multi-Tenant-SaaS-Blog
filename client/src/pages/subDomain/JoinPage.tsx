@@ -25,8 +25,11 @@ import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { useVerifyInviteMutation } from "../../state/api/userApi";
 import { Checkbox } from "@/components/ui/checkbox";
-import {useSignupAndJoinTeamMutation} from "../../state/api/userApi"
-
+import {
+  useSignupAndJoinTeamMutation,
+  useJoinTeamMutation,
+} from "../../state/api/userApi";
+import { useNavigate } from "react-router-dom";
 interface JoinFormValues {
   email: string;
   fullName: string;
@@ -36,11 +39,12 @@ interface JoinFormValues {
   terms: boolean;
 }
 export default function JoinPage() {
-  const [verifyInvite, { isLoading, data, isError }] =
+  const navigate = useNavigate();
+  const [verifyInvite, { isLoading, data, isError, error }] =
     useVerifyInviteMutation();
-    const [signupAndJoinTeam, { isLoading: signUpLoading }] =
+  const [signupAndJoinTeam, { isLoading: signUpLoading }] =
     useSignupAndJoinTeamMutation();
-    console.log(data)
+  const [joinTeam, { isLoading: joinLoading }] = useJoinTeamMutation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("c");
   const [showPassword, setShowPassword] = useState(false);
@@ -70,33 +74,48 @@ export default function JoinPage() {
     };
 
     validateToken();
-  }, [token]);
+  }, [token, verifyInvite]);
 
   const onSubmit = async (formData: JoinFormValues): Promise<void> => {
-    try{
- const res=await signupAndJoinTeam({
-      email: formData.email,
-      jobTitle: formData.jobTitle||"" ,
-      password: formData.password,
-      role: data?.data.role as string,
-      teamId: data?.data.teamId as string,
-      fullName: formData.fullName,
-    }).unwrap();
-    toast.success(res.message);
-    }catch(error){
-      toast.error("Failed to sign up and join the team. Please try again.");
-      
+    try {
+      const res = await signupAndJoinTeam({
+        email: formData.email,
+        jobTitle: formData.jobTitle || "",
+        password: formData.password,
+        role: data?.data.role as string,
+        teamId: data?.data.teamId as string,
+        fullName: formData.fullName,
+        inviteId: data?.data.id as string,
+      }).unwrap();
+      toast.success(res.message);
+      navigate("/");
+    } catch (error) {
+      toast.error(
+        error.data.message ||
+          "Failed to sign up and join the team. Please try again."
+      );
     }
-  
-
   };
 
   const handleJoinTeam = async () => {
-    console.log("join");
+    try {
+      const res = await joinTeam({
+        email: data?.data.email as string,
+        teamId: data?.data.teamId as string,
+        role: data?.data.role as string,
+        inviteId: data?.data.id as string,
+      }).unwrap();
+      toast.success(res.message);
+      navigate("/");
+    } catch (err) {
+      toast.error(
+        err.data.message || "Failed to join the team. Please try again."
+      );
+    }
   };
 
   if (tokenValid === false) {
-    return <InvalidTokenAlert />;
+    return <InvalidTokenAlert err={error} />;
   }
 
   return (
@@ -106,7 +125,7 @@ export default function JoinPage() {
       ) : (
         <>
           {isError ? (
-            <InvalidTokenAlert />
+            <InvalidTokenAlert err={error} />
           ) : (
             <>
               {data?.signup ? (
@@ -263,9 +282,9 @@ export default function JoinPage() {
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={isLoading}
+                        disabled={signUpLoading}
                       >
-                        {isLoading ? (
+                        {signUpLoading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Creating Account...
@@ -283,6 +302,7 @@ export default function JoinPage() {
                   role={data?.data.role as string}
                   teamId={data?.data.teamId as string}
                   handleJoinTeam={handleJoinTeam}
+                  isJoining={joinLoading}
                 />
               )}
             </>
@@ -293,29 +313,27 @@ export default function JoinPage() {
   );
 }
 
-const InvalidTokenAlert = () => {
+const InvalidTokenAlert = ({ err }: { err?: any }) => {
   return (
     <Card>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-          <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+          <AlertCircle className="h-6 w-6 text-destructive" />
         </div>
-        <CardTitle className="text-2xl">Invalid or Expired Invite</CardTitle>
-        <CardDescription>
-          This invitation link is no longer valid
-        </CardDescription>
+        <CardTitle className="text-lg">Invalid or Expired Invite</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent>
         <Alert variant="destructive">
           <AlertDescription>
-            The invitation link you used is either invalid or has expired.
-            Please contact your team administrator for a new invitation.
+            {err?.data?.message ??
+              "This invite link is invalid or has expired."}
           </AlertDescription>
         </Alert>
       </CardContent>
     </Card>
   );
 };
+
 const Loader = () => {
   return (
     <Card>
@@ -333,11 +351,13 @@ const JoinTeam = ({
   role,
   teamId,
   handleJoinTeam,
+  isJoining,
 }: {
   email: string;
   role: string;
   teamId: string;
   handleJoinTeam: () => Promise<void>;
+  isJoining?: boolean;
 }) => {
   return (
     <Card>
@@ -362,10 +382,10 @@ const JoinTeam = ({
           </p>
 
           <Button
-            asChild
+            disabled={isJoining}
             className="w-full"
             onClick={() => {
-              handleJoinTeam;
+              handleJoinTeam();
             }}
           >
             Join the Team
