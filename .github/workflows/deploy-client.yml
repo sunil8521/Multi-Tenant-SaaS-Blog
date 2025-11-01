@@ -1,0 +1,51 @@
+name: Build and Deploy React Client to EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "client/**"          # ✅ Trigger only when client code changes
+
+env:
+  EC2_HOST: ec2-44-223-24-30.compute-1.amazonaws.com # Replace with your EC2 public DNS
+  EC2_USER: ubuntu                                # Usually ubuntu for AWS EC2
+  DEPLOY_PATH: /var/www/html                      # Path where your build files go
+
+jobs:
+  deploy-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install and Build React App
+        run: |
+          cd client
+          npm install
+          npm run build
+
+      - name: Copy build to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "client/build/*"
+          target: "${{ env.DEPLOY_PATH }}"
+
+      - name: Restart Nginx (optional)
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx
+            echo "✅ React app deployed successfully!"
