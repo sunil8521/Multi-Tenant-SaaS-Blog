@@ -2,7 +2,7 @@ import type React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Menu, X, LogOut, User as UserIcon,UserStar } from "lucide-react";
+import { Menu, X, LogOut, User as UserIcon, UserStar } from "lucide-react";
 import { useAppSelector } from "../state/hook";
 import { authClient } from "../lib/authClient";
 import { useNavigate } from "react-router-dom";
@@ -12,21 +12,16 @@ import {
   DrawerHeader,
   DrawerTrigger,
   DrawerTitle,
-  DrawerDescription
+  DrawerDescription,
 } from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  
 } from "@/components/ui/dropdown-menu";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/components/ui/avatar";
-import {removeUser} from "../state/slices/authSlice";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { removeUser } from "../state/slices/authSlice";
 import { useAppDispatch } from "../state/hook";
 function PublicLayout() {
   const dispatch = useAppDispatch();
@@ -38,7 +33,6 @@ function PublicLayout() {
       fetchOptions: {
         onSuccess: () => {
           dispatch(removeUser());
-
         },
       },
     });
@@ -46,7 +40,7 @@ function PublicLayout() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -58,30 +52,7 @@ function PublicLayout() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-6">
-              {/* <Link
-                to="/"
-                className="text-sm font-medium hover:text-blue-600 transition-colors"
-              >
-                Explore
-              </Link> */}
-              {/* {user && (
-                <Link
-                  to="/write"
-                  className="text-sm font-medium hover:text-blue-600 transition-colors"
-                >
-                  Write
-                </Link>
-              )} */}
-              {/* {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="text-sm font-medium text-blue-600 border border-blue-600 rounded-md px-2 py-1 hover:bg-blue-600 hover:text-white transition-colors"
-                >
-                  Admin Panel
-                </Link>
-              )} */}
-            </nav>
+            <nav className="hidden md:flex items-center space-x-6"></nav>
 
             {/* Right Side */}
             <div className="hidden md:flex items-center space-x-3">
@@ -92,55 +63,62 @@ function PublicLayout() {
                   </Button>
                 </>
               ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <div className="cursor-pointer flex items-center space-x-2">
-                      <Avatar className="h-10 w-10">
-                        {user.image ? (
-                          <AvatarImage
-                            src={`https://d1egxlljzt31im.cloudfront.net/${user.image}`}
-                            alt={user.name || "User"}
-                          />
-                        ) : (
-                          <AvatarFallback>
-                            {user.name?.[0]?.toUpperCase()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                    </div>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                <>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/my-posts">My Posts</Link>
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="cursor-pointer flex items-center space-x-2">
+                        <Avatar className="h-10 w-10">
+                          {user.image ? (
+                            <AvatarImage
+                              src={`https://d1egxlljzt31im.cloudfront.net/${user.image}`}
+                              alt={user.name || "User"}
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {user.name?.[0]?.toUpperCase()}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                      <Link
-                        to="/admin/dashboard"
-                        className="flex items-center space-x-2"
+                        <Link
+                          to="/admin/dashboard"
+                          className="flex items-center space-x-2"
+                        >
+                          <UserStar className="h-4 w-4" />
+                          <span>Admin panel</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          to="/profile"
+                          className="flex items-center space-x-2"
+                        >
+                          <UserIcon className="h-4 w-4" />
+                          <span>Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="text-red-600"
                       >
-                        <UserStar  className="h-4 w-4" />
-                        <span>Admin panel</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link
-                        to="/profile"
-                        className="flex items-center space-x-2"
-                      >
-                        <UserIcon className="h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      className="text-red-600"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
               )}
               {user && (
                 <div className="flex items-center pr-0">
                   {/* Name + Role */}
+
+                  <div></div>
                   <div className="flex items-center pr-0">
                     <span className="font-medium text-sm text-foreground">
                       {user.name.split(" ")[0]}
@@ -168,19 +146,19 @@ function PublicLayout() {
                 <DrawerContent className="h-full w-72 sm:w-80 right-0 fixed bg-background shadow-lg rounded-l-2xl p-5 flex flex-col justify-between">
                   {/* Header Links */}
                   <DrawerHeader className=" text-center border-b pb-4 mb-4">
-                    <DrawerTitle className="text-lg font-semibold">Menu</DrawerTitle>
+                    <DrawerTitle className="text-lg font-semibold">
+                      Menu
+                    </DrawerTitle>
                     <DrawerDescription></DrawerDescription>
                   </DrawerHeader>
 
-                  <div className="flex text-center flex-col flex-grow space-y-4">
+                  <div className="flex text-center flex-col grow space-y-4">
                     <Link
                       to="/"
                       className="text-sm  font-medium hover:text-blue-600 transition-colors"
                     >
                       Explore
                     </Link>
-
-                   
 
                     {isAdmin && (
                       <Link
@@ -197,7 +175,6 @@ function PublicLayout() {
                           <Button variant="ghost" size="sm" asChild>
                             <Link to="/login">Sign In</Link>
                           </Button>
-                     
                         </div>
                       ) : (
                         <div className="flex flex-col space-y-2">
@@ -240,7 +217,7 @@ function PublicLayout() {
                 <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
                   <span className="text-white font-bold text-sm">TB</span>
                 </div>
-                <span className="font-bold text-xl">TeamBlog</span>
+                <span className="font-bold text-xl">TeamLog</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 The collaborative blogging platform for teams and individuals.
@@ -339,7 +316,7 @@ function PublicLayout() {
           </div>
 
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 TeamBlog. All rights reserved.</p>
+            <p>&copy; 2024 TeamLog. All rights reserved.</p>
           </div>
         </div>
       </footer>

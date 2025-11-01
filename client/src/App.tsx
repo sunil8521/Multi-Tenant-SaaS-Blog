@@ -45,6 +45,10 @@ const PublicPostViewPage = lazy(
 
 const RouteNotFound = lazy(() => import("./pages/notfound/RouteNotFound"));
 
+const UserMyPostsPage = lazy(() => import("./pages/subDomain/UserMyPostsPage"));
+const UserBookmarksPage = lazy(() => import("./pages/subDomain/UserBookmarksPage"));
+const UserDraftsPage = lazy(() => import("./pages/subDomain/UserDraftsPage"));
+
 function App() {
   const dispatch = useAppDispatch();
   const loadingState = useAppSelector((state) => state.auth.isLoading);
@@ -66,6 +70,9 @@ function App() {
 
   const subDomainPrivateRoutes = [
     { path: "/write", element: <PublicPostEditorPage /> },
+    { path: "/my-posts", element: <UserMyPostsPage /> },
+    { path: "/bookmarks", element: <UserBookmarksPage /> },
+    { path: "/drafts", element: <UserDraftsPage /> },
 
     { path: "/blog/:slug", element: <PublicPostViewPage /> },
   ];

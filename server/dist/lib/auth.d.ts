@@ -1,4 +1,8 @@
 export declare const auth: import("better-auth").Auth<{
+    session: {
+        expiresIn: number;
+        updateAge: number;
+    };
     hooks: {
         before: (inputContext: import("better-auth").MiddlewareInputContext<import("better-auth").MiddlewareOptions>) => Promise<void>;
     };

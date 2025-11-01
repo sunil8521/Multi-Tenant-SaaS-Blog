@@ -4,7 +4,12 @@ import prisma from "../db/client.js";
 import errorHandler from "../utils/errorHandler.js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { checkUserTeamMembership } from "../utils/checkUserTeamMembership.js";
+
 export const auth = betterAuth({
+  session: {
+    expiresIn: 60 * 60 * 24 * 2, // 2 days (in seconds)
+    updateAge: 60 * 60 * 24, // 1 day (session refresh interval)
+  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== "/sign-in/email") {

@@ -38,8 +38,9 @@ function LoginPage() {
     formState: { errors, isSubmitting, isValid },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const res = await authClient.signIn.email({ email, password });
+  const onSubmit: SubmitHandler<Inputs> = async ({ email, password
+    , rememberMe }) => {
+    const res = await authClient.signIn.email({ email, password,   rememberMe: rememberMe });
 
     if (res.error) {
       toast.error(res.error.message);
