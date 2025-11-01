@@ -1,12 +1,4 @@
-import type React from "react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import authApi from "../../state/api/userApi";
 import {
   Card,
   CardContent,
@@ -14,13 +6,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import {  useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import authApi from "../../state/api/userApi";
 // import  AuthLayout from "../layouts/AuthLayout"
-import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
-import { authClient } from "../../lib/authClient";
-import { useAppDispatch } from "../../state/hook";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { authClient } from "../../lib/authClient";
+import { useAppDispatch } from "../../state/hook";
 import { addUser } from "../../state/slices/authSlice";
 type Inputs = {
   email: string;

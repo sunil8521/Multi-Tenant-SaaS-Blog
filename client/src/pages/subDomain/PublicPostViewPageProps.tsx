@@ -1,67 +1,63 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
-  Heart,
-  MessageCircle,
-  Bookmark,
-  Share2,
-  Twitter,
-  Facebook,
-  Link2,
-  Clock,
   ArrowLeft,
-  Send,
+  Bookmark,
   ChevronDown,
   ChevronUp,
+  Clock,
+  Facebook,
+  Heart,
+  Link2,
+  Share2,
+  Twitter
 } from "lucide-react";
-import { data, Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Link, useParams } from "react-router-dom";
+import remarkBreaks from "remark-breaks";
 import { toast } from "sonner";
-import { useAppSelector } from "../../state/hook";
 import {
-  useGetSinglePostQuery,
-  useGetPostCommentsQuery,
-  useCreatePostCommentMutation,
   useCreateCommentReplyMutation,
+  useCreatePostCommentMutation,
+  useGetPostCommentsQuery,
+  useGetSinglePostQuery,
   useLazyGetCommentRepliesQuery
 } from "../../state/api/postApi";
-import ReactMarkdown from "react-markdown";
-import remarkBreaks from "remark-breaks";
+import { useAppSelector } from "../../state/hook";
 
 // Mock data for demonstration
 
-const relatedPosts = [
-  {
-    id: "2",
-    title: "Building Scalable Design Systems",
-    author: "Marcus Johnson",
-    readTime: "12 min read",
-    image: "/placeholder-5tixe.png",
-  },
-  {
-    id: "3",
-    title: "Mastering TypeScript for React Development",
-    author: "Emily Rodriguez",
-    readTime: "15 min read",
-    image: "/placeholder-grs1k.png",
-  },
-];
+// const relatedPosts = [
+//   {
+//     id: "2",
+//     title: "Building Scalable Design Systems",
+//     author: "Marcus Johnson",
+//     readTime: "12 min read",
+//     image: "/placeholder-5tixe.png",
+//   },
+//   {
+//     id: "3",
+//     title: "Mastering TypeScript for React Development",
+//     author: "Emily Rodriguez",
+//     readTime: "15 min read",
+//     image: "/placeholder-grs1k.png",
+//   },
+// ];
 
 export default function PublicPostViewPage() {
-  const [allComments, setAllComments] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [allComments, setAllComments] = useState([]);
+  // const [page, setPage] = useState(1);
+  // const [hasMore, setHasMore] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -105,7 +101,7 @@ export default function PublicPostViewPage() {
     switch (platform) {
       case "twitter":
         window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(title!)}&url=${encodeURIComponent(url)}`
         );
         break;
       case "facebook":

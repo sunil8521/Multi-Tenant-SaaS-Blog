@@ -1,6 +1,5 @@
-import type React from "react"
-import {Link, Outlet} from "react-router-dom"
 import { FileText } from "lucide-react"
+import { Link, Outlet } from "react-router-dom"
 
 
  function AuthLayout() {

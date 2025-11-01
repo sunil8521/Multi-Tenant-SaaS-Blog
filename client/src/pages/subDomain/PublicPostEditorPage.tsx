@@ -1,8 +1,8 @@
-import type React from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import type React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 
@@ -14,32 +14,31 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
+  ArrowLeft,
   Bold,
-  Italic,
-  Underline,
-  Link2,
-  ImageIcon,
-  List,
-  ListOrdered,
-  Quote,
   Code,
   Eye,
+  Heading,
+  ImageIcon,
+  Italic,
+  Link2,
+  List,
+  ListOrdered,
+  MessageSquareCode,
+  Plus,
+  Quote,
+  RefreshCw,
   Save,
   Send,
-  X,
-  Plus,
-  ArrowLeft,
-  Heading,
-  MessageSquareCode,
-  RefreshCw,
+  X
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
-import {
-  usePostImageMutation,
-  useCreatePostMutation,
-} from "../../state/api/postApi";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  useCreatePostMutation,
+  usePostImageMutation,
+} from "../../state/api/postApi";
 
 export default function PublicPostEditorPage() {
   // const [content, setContent] = useState("");

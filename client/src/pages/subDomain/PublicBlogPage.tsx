@@ -1,11 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import Loading from "@/components/custom/Loading";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -15,23 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Bookmark,
+  Clock,
   Heart,
   MessageCircle,
-  Bookmark,
-  TrendingUp,
-  Clock,
-  Search,
   PenTool,
+  Search
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import type { Post } from "../../state/api/postApi";
 import {
   useGetAllPostQuery,
   useGetAllTagsQuery,
 } from "../../state/api/postApi";
 import { useAppSelector } from "../../state/hook";
-import type { Post } from "../../state/api/postApi";
-import Loading from "@/components/custom/Loading";
 
 
 function PublicBlogPage() {

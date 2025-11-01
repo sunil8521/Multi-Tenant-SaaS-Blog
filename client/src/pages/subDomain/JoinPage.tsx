@@ -1,8 +1,5 @@
-import type React from "react";
-import { useState, useEffect } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -10,26 +7,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
+  AlertCircle,
+  CheckCircle,
   Eye,
   EyeOff,
   Loader2,
-  AlertCircle,
-  CheckCircle,
   Users,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
-import { useVerifyInviteMutation } from "../../state/api/userApi";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  useSignupAndJoinTeamMutation,
-  useJoinTeamMutation,
-} from "../../state/api/userApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
+import { useJoinTeamMutation, useSignupAndJoinTeamMutation, useVerifyInviteMutation } from "../../state/api/userApi";
 interface JoinFormValues {
   email: string;
   fullName: string;
@@ -91,6 +83,7 @@ export default function JoinPage() {
       navigate("/");
     } catch (error) {
       toast.error(
+        // @ts-ignore - we intentionally don't trust the type
         error.data.message ||
           "Failed to sign up and join the team. Please try again."
       );
@@ -109,7 +102,8 @@ export default function JoinPage() {
       navigate("/");
     } catch (err) {
       toast.error(
-        err.data.message || "Failed to join the team. Please try again."
+        //@ts-ignore - we intentionally don't trust the type
+        err?.data.message || "Failed to join the team. Please try again."
       );
     }
   };

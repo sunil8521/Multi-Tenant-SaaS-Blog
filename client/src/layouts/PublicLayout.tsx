@@ -1,18 +1,12 @@
-import type React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Menu, X, LogOut, User as UserIcon, UserStar } from "lucide-react";
-import { useAppSelector } from "../state/hook";
-import { authClient } from "../lib/authClient";
-import { useNavigate } from "react-router-dom";
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
-  DrawerTrigger,
-  DrawerTitle,
   DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   DropdownMenu,
@@ -20,9 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { LogOut, Menu, User as UserIcon, UserStar } from "lucide-react";
+import { Link, Outlet } from "react-router-dom";
+import { authClient } from "../lib/authClient";
+import { useAppDispatch, useAppSelector } from "../state/hook";
 import { removeUser } from "../state/slices/authSlice";
-import { useAppDispatch } from "../state/hook";
 function PublicLayout() {
   const dispatch = useAppDispatch();
   // const navigate = useNavigate();

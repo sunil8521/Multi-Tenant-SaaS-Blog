@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { use } from "react";
 
 //------------------------------
 interface PostImageResponse {
@@ -156,6 +155,10 @@ interface myPosts{
   image: string | null;
   createdAt: string;
   updatedAt: string;
+  _count: {
+    likes: number;
+    comments: number;
+  };
 }
 interface GetMyPostResponse {
   success: boolean;

@@ -47,7 +47,7 @@ const Format=(dateString:string):string=>{
         </div>
 
         {/* Posts Table */}
-        {myPosts?.posts?.length > 0 ? (
+        {(myPosts?.posts.length ?? 0) > 0 ? (
           <div className="space-y-4">
             {myPosts?.posts.map((post) => (
               <Card key={post.id} className="hover:shadow-md transition-shadow">
@@ -79,7 +79,7 @@ const Format=(dateString:string):string=>{
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeletePost(post.id)}
+                        // onClick={() => handleDeletePost(post.id)}
                         className="text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />

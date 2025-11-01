@@ -1,12 +1,9 @@
-import type React from "react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,22 +12,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
-  Home,
-  FileText,
-  Users,
-  Settings,
   BarChart3,
+  FileText,
+  Home,
+  LogOut,
   Menu,
   Search,
-  Moon,
-  Sun,
-  LogOut,
+  Settings,
   User,
+  Users
 } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { cn } from "../lib/utils";
 

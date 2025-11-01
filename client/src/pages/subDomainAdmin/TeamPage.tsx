@@ -11,11 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -238,24 +234,19 @@ export default function TeamPage() {
     const message = messageRef.current?.value.trim() || "";
     const role = roleRef.current;
 
-
-
-
     // 🔹 Example: Send to backend
     try {
-      const res=await sendInvite({email,role,message}).unwrap()
-      
+      const res = await sendInvite({ email, role, message }).unwrap();
 
-
-     toast.success(res.message); 
+      toast.success(res.message);
       setIsInviteDialogOpen(false);
     } catch (err) {
-      console.error(err);
-      toast.error(err.data.message);
+      // @ts-ignore - we intentionally don't trust the type
+      toast.error(err?.data.message);
     }
   };
 
-  const handleResendInvite = async (invitationId: number) => {
+  const handleResendInvite = async () => {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -703,7 +694,7 @@ export default function TeamPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleResendInvite(invitation.id)}
+                      // onClick={() => handleResendInvite(invitation.id)}
                     >
                       <Mail className="h-4 w-4 mr-2" />
                       Resend

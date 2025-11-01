@@ -1,7 +1,10 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import AuthLayout from "./layouts/AuthLayout";
+import MainLayout from "./layouts/MainLayout";
+import PublicLayout from "./layouts/PublicLayout";
+import authApi from "./state/api/userApi";
 import { useAppDispatch, useAppSelector } from "./state/hook";
-import { useFetchProfileQuery } from "./state/api/userApi";
 import {
   addUser,
   removeUser,
@@ -9,13 +12,10 @@ import {
   setLoading,
   setSubDomain,
 } from "./state/slices/authSlice";
-import authApi from "./state/api/userApi";
-import AuthLayout from "./layouts/AuthLayout";
-import PublicLayout from "./layouts/PublicLayout";
-import MainLayout from "./layouts/MainLayout";
 
 import LoadingPage from "@/components/custom/LoadingPage";
 import TeamNotFound from "@/components/custom/TeamNotFound";
+import Auth from "./Auth";
 // import NotFoundPage from "./pages/NotFoundPage";
 
 const DashboardPage = lazy(
@@ -42,7 +42,6 @@ const PublicPostEditorPage = lazy(
 const PublicPostViewPage = lazy(
   () => import("./pages/subDomain/PublicPostViewPageProps")
 );
-import Auth from "./Auth";
 
 const RouteNotFound = lazy(() => import("./pages/notfound/RouteNotFound"));
 
