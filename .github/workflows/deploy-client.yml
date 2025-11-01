@@ -27,8 +27,8 @@ jobs:
       - name: Install deps & build
         run: |
           cd client
-          npm install
-          npm run build
+          pnpm install
+          pnpm run build
 
       - name: SSH - Clean target dir
         uses: appleboy/ssh-action@v0.1.8
