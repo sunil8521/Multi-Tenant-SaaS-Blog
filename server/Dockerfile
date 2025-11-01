@@ -1,4 +1,3 @@
-ARG DATABASE_URL="postgresql://fake:fake@localhost:5432/fake"
 
 FROM node:18-alpine AS builder
 
@@ -10,7 +9,7 @@ RUN pnpm install
 
 COPY . .
 
-ENV DATABASE_URL=$DATABASE_URL
+ENV DATABASE_URL="postgresql://fake:fake@localhost:5432/fake"
 RUN pnpm generate
 RUN pnpm build
 
