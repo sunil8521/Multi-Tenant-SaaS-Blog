@@ -507,7 +507,7 @@ export const UpdateMyPost = TryCatch(
 
       // ensure unique slug inside team
       const slugExists = await prisma.post.findFirst({
-        where: { slug: newSlug, teamId, NOT: { id: post.id } }
+        where: { slug: newSlug, teamId: teamId!, NOT: { id: post.id } }
       });
       if (slugExists) {
         return next(new ErrorHandler(409, "A post with this title already exists"));
