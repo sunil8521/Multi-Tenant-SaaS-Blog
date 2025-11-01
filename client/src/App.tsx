@@ -144,6 +144,7 @@ function App() {
   const mainDomainAuthRoutes = [
     { path: "create-team", element: <CreateTeamPage /> },
   ];
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
