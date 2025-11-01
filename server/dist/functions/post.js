@@ -390,8 +390,58 @@ export const UpdateMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
 }); //TODO: handle update post logic
 export const GetMyPost = TryCatch(async (req, res, next) => {
-    const { slug } = req.params;
-}); //TODO: handle update post logic
+    const userId = req.user?.id; // user from auth middleware
+    const teamId = req.teamId;
+    const { slug } = req.params; // subdomain
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    if (!userId || !teamId || !slug) {
+        return next(new ErrorHandler(400, "Unauthorized or missing team/subdomain"));
+    }
+    // ✅ verify team belongs to this subdomain (security protection)
+    const team = await prisma.team.findFirst({
+        where: { id: teamId, subdomain: slug },
+    });
+    if (!team) {
+        return next(new ErrorHandler(404, "Team not found or access denied"));
+    }
+    // ✅ fetch only posts created by current user
+    const posts = await prisma.post.findMany({
+        where: {
+            authorId: userId,
+            teamId,
+        },
+        select: {
+            id: true,
+            title: true,
+            slug: true,
+            image: true,
+            createdAt: true,
+            updatedAt: true,
+            _count: {
+                select: { comments: true, likes: true },
+            },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+    });
+    const total = await prisma.post.count({
+        where: { authorId: userId, teamId },
+    });
+    return res.status(200).json({
+        success: true,
+        message: "My posts fetched successfully",
+        posts,
+        pagination: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        },
+    });
+});
 export const DeleteMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
 }); //TODO: handle delete post logic
