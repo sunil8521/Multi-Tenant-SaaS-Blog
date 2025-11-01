@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "server/**"          # ✅ Trigger only when files in /server change
+      - "server/**"  # ✅ Trigger only when files in /server change
 
 env:
   AWS_REGION: us-east-1
@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Checkout source code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # ✅ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -26,23 +28,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # ✅ Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image from /server
+      # ✅ Delete previous image (optional but keeps ECR clean)
+      - name: Delete previous image in ECR
+        run: |
+          echo "🧹 Deleting old image from ECR (if any)..."
+          aws ecr batch-delete-image \
+            --repository-name $ECR_REPOSITORY \
+            --image-ids imageTag=latest || echo "No previous image found."
+
+      # ✅ Build new Docker image from /server
+      - name: Build Docker image
         run: |
           cd server
           docker build -t $ECR_REPOSITORY:latest .
 
+      # ✅ Tag Docker image for ECR
       - name: Tag Docker image
         run: |
           docker tag $ECR_REPOSITORY:latest \
           ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+      # ✅ Push Docker image to ECR
       - name: Push Docker image to ECR
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+      # ✅ Log success message
       - name: Log success
-        run: echo "✅ Server Docker image pushed successfully!"
+        run: echo "✅ Server Docker image built and pushed successfully to ECR!"
