@@ -386,13 +386,15 @@ export const CreatePostReply = TryCatch(async (req, res, next) => {
         message: "Reply added successfully.",
     });
 }); // add reply to a comment
-export const UpdatePost = TryCatch(async (req, res, next) => {
+export const UpdateMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
 }); //TODO: handle update post logic
-export const DeletePost = TryCatch(async (req, res, next) => {
+export const GetMyPost = TryCatch(async (req, res, next) => {
+    const { slug } = req.params;
+}); //TODO: handle update post logic
+export const DeleteMyPost = TryCatch(async (req, res, next) => {
     const { slug } = req.params;
 }); //TODO: handle delete post logic
-export const UploadSinglePicture = TryCatch(async (req, res, next) => { }); //TODO: handle upload single picture logic
 export const PresignedUrl = TryCatch(async (req, res, next) => {
     const { filetype } = req.body;
     const filename = `${req.subdomain}/${Date.now()}.${filetype}`;

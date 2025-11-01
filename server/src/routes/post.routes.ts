@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import {CreatePost,DeletePost,GetAllPost,GetPost, PresignedUrl, UpdatePost,UploadSinglePicture,GetAllTags, GetPostComments,CreatePostComment,CreatePostReply,GetReplyComments} from "../functions/post.js";
+import {CreatePost,DeleteMyPost,GetMyPost,GetAllPost,GetPost, PresignedUrl, UpdateMyPost,GetAllTags, GetPostComments,CreatePostComment,CreatePostReply,GetReplyComments} from "../functions/post.js";
 // import {multerConfig} from "../middlewares/multer.js"
 const postRoutes: Router = Router();
 
 postRoutes.post("/create", authMiddleware, CreatePost);
-postRoutes.put("/update/:slug", authMiddleware, UpdatePost);
-postRoutes.delete("/delete/:slug", authMiddleware, DeletePost);
+postRoutes.put("/update/:slug", authMiddleware, UpdateMyPost);
+postRoutes.delete("/delete/:slug", authMiddleware, DeleteMyPost);
+postRoutes.get("/get-my", authMiddleware, GetMyPost);
 
 postRoutes.get("/getall/:subDomain", GetAllPost);
 postRoutes.get("/get/:subDomain/:slug", GetPost);

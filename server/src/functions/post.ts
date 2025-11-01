@@ -471,21 +471,22 @@ export const CreatePostReply = TryCatch(
   }
 ); // add reply to a comment
 
-export const UpdatePost = TryCatch(
+export const UpdateMyPost = TryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { slug } = req.params;
+  }
+); //TODO: handle update post logic
+export const GetMyPost = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
   }
 ); //TODO: handle update post logic
 
-export const DeletePost = TryCatch(
+export const DeleteMyPost = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
   }
 ); //TODO: handle delete post logic
-
-export const UploadSinglePicture = TryCatch(
-  async (req: Request, res: Response, next: NextFunction) => {}
-); //TODO: handle upload single picture logic
 
 export const PresignedUrl = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
