@@ -8,7 +8,7 @@ on:
       - "client/**"          # ✅ Trigger only when client code changes
 
 env:
-  EC2_HOST: ec2-44-223-24-30.compute-1.amazonaws.com # Replace with your EC2 public DNS
+  EC2_HOST: ec2-34-228-20-4.compute-1.amazonaws.com # Replace with your EC2 public DNS
   EC2_USER: ubuntu                                # Usually ubuntu for AWS EC2
   DEPLOY_PATH: /var/www/html                      # Path where your build files go
 
