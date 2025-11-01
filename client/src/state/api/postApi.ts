@@ -146,6 +146,28 @@ interface GetReplyCommentsResponse {
   success: boolean;
   replies: CommentType[];
 }
+//------------------------------
+
+interface myPosts{
+  id: string;
+  title: string;
+  excerpt: string;
+  slug: string;
+  image: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+interface GetMyPostResponse {
+  success: boolean;
+  message: string;
+  posts: myPosts[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
 
 const postApi = createApi({
   reducerPath: "postApi",
@@ -153,8 +175,14 @@ const postApi = createApi({
     baseUrl: import.meta.env.VITE_API_URL as string,
     credentials: "include",
   }),
-  //   tagTypes: ["User"],
-
+ tagTypes: [
+    "Posts",
+    "SinglePost",
+    "Tags",
+    "Comments",
+    "Replies",
+    "MyPosts"
+  ],
   endpoints: (builder) => ({
     postImage: builder.mutation<PostImageResponse, PostImageRequest>({
       query: (data) => ({
@@ -169,6 +197,10 @@ const postApi = createApi({
         method: "POST",
         body: data,
       }),
+       invalidatesTags: [
+        { type: "Posts", id: "LIST" },
+        { type: "MyPosts", id: "LIST" }
+      ]
     }),
     getAllPost: builder.query<GetAllPostResponse, GetAllPostRequest>({
       query: ({ page, limit, subDomain, search, tag }) => {
@@ -186,12 +218,16 @@ const postApi = createApi({
           method: "GET",
         };
       },
+            providesTags: [{ type: "Posts", id: "LIST" }]
+
     }),
     getSinglePost: builder.query<GetSinglePostResponse, GetSinglePostRequest>({
       query: ({ subDomain, slug }) => ({
         url: `/post/get/${subDomain}/${slug}`,
         method: "GET",
       }),
+            providesTags: (_r, _e, { slug }) => [{ type: "SinglePost", id: slug }]
+
     }),
 
     getAllTags: builder.query<GetAllTagsResponse, GetAllTagsRequest>({
@@ -199,6 +235,8 @@ const postApi = createApi({
         url: `/post/get-tags/${subDomain}`,
         method: "GET",
       }),
+            providesTags: [{ type: "Tags", id: "LIST" }]
+
     }),
     getPostComments: builder.query<GetPostCommentsResponse,GetPostCommentsRequest>({
       query: ({ postId, page, limit }) => {
@@ -214,12 +252,18 @@ const postApi = createApi({
           method: "GET",
         };
       },
+       providesTags: (_r, _e, { postId }) => [
+        { type: "Comments", id: postId }
+      ]
     }),
     getCommentReplies: builder.query<GetReplyCommentsResponse,GetReplyCommentsRequest>({
       query: ({ postId, commentId }) => ({
         url: `/post/get-replies/${postId}/${commentId}`,
         method: "GET",
       }),
+       providesTags: (_r, _e, { commentId }) => [
+        { type: "Replies", id: commentId }
+      ]
     }),
 
     createPostComment: builder.mutation<CreatePostCommentResponse, CreatePostCommentRequest>({
@@ -228,6 +272,9 @@ const postApi = createApi({
         method: "POST",
         body: data,
       }),
+       invalidatesTags: (_r, _e, { postId }) => [
+        { type: "Comments", id: postId }
+      ]
     }),
     createCommentReply: builder.mutation<CreateCommentReplyResponse, CreateCommentReplyRequest>({
       query: ({ postId, commentId, data }) => ({
@@ -235,6 +282,17 @@ const postApi = createApi({
         method: "POST",
         body: data
       }),
+       invalidatesTags: (_r, _e, { commentId }) => [
+        { type: "Replies", id: commentId }
+      ]
+     }),
+     GetMyPost: builder.query<GetMyPostResponse, void>({
+      query: () => ({
+        url: `/post/get-my`,
+        method: "GET",
+      }),
+            providesTags: [{ type: "MyPosts", id: "LIST" }]
+
      }),
      
 
@@ -252,6 +310,7 @@ export const {
   useGetPostCommentsQuery,
   useCreatePostCommentMutation,
   useCreateCommentReplyMutation,
-  useLazyGetCommentRepliesQuery
+  useLazyGetCommentRepliesQuery,
+  useGetMyPostQuery
 } = postApi;
 export default postApi;

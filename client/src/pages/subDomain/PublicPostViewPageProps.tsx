@@ -527,7 +527,7 @@ const toggleReplies = async (commentId: string) => {
         </Card>
 
         {/* Related Posts */}
-        <Card>
+        {/* <Card>
           <CardContent className="p-6">
             <h3 className="text-xl font-bold mb-6">Related Posts</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -554,7 +554,7 @@ const toggleReplies = async (commentId: string) => {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

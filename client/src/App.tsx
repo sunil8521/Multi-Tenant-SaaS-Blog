@@ -42,11 +42,14 @@ const PublicPostEditorPage = lazy(
 const PublicPostViewPage = lazy(
   () => import("./pages/subDomain/PublicPostViewPageProps")
 );
+import Auth from "./Auth";
 
 const RouteNotFound = lazy(() => import("./pages/notfound/RouteNotFound"));
 
 const UserMyPostsPage = lazy(() => import("./pages/subDomain/UserMyPostsPage"));
-const UserBookmarksPage = lazy(() => import("./pages/subDomain/UserBookmarksPage"));
+const UserBookmarksPage = lazy(
+  () => import("./pages/subDomain/UserBookmarksPage")
+);
 const UserDraftsPage = lazy(() => import("./pages/subDomain/UserDraftsPage"));
 
 function App() {
@@ -54,6 +57,7 @@ function App() {
   const loadingState = useAppSelector((state) => state.auth.isLoading);
   const subDomain = useAppSelector((state) => state.auth.subDomain);
   const isValidTeam = useAppSelector((state) => state.auth.isValidTeam);
+  const user = useAppSelector((state) => state.auth.user);
 
   const adminRoutes = [
     { path: "dashboard", element: <DashboardPage /> },
@@ -61,20 +65,80 @@ function App() {
     { path: "settings", element: <TeamSettingsPage /> },
   ];
   const subDomainAuthRoutes = [
-    { path: "login", element: <LoginPage /> },
-    { path: "signup", element: <SignupPage /> },
-    { path: "forgot-password", element: <ResetPasswordPage /> },
-    { path: "join", element: <JoinPage /> },
+    {
+      path: "login",
+      element: (
+        <Auth user={user} onlyPublic redirect="/">
+          <LoginPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "signup",
+      element: (
+        <Auth user={user} onlyPublic redirect="/">
+          <SignupPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "forgot-password",
+      element: (
+        <Auth user={user} onlyPublic redirect="/">
+          <ResetPasswordPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "join",
+      element: (
+        <Auth user={user} onlyPublic redirect="/">
+          <JoinPage />
+        </Auth>
+      ),
+    },
   ];
-  const subDomainPublicRoutes = [{ path: "/", element: <PublicBlogPage /> }];
+  const subDomainPublicRoutes = [
+    { path: "/", element: <PublicBlogPage /> },
+    {
+      path: "/blog/:slug",
+      element: <PublicPostViewPage />,
+    },
+  ];
 
   const subDomainPrivateRoutes = [
-    { path: "/write", element: <PublicPostEditorPage /> },
-    { path: "/my-posts", element: <UserMyPostsPage /> },
-    { path: "/bookmarks", element: <UserBookmarksPage /> },
-    { path: "/drafts", element: <UserDraftsPage /> },
-
-    { path: "/blog/:slug", element: <PublicPostViewPage /> },
+    {
+      path: "/write",
+      element: (
+        <Auth user={user}>
+          <PublicPostEditorPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "/my-posts",
+      element: (
+        <Auth user={user}>
+          <UserMyPostsPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "/bookmarks",
+      element: (
+        <Auth user={user}>
+          <UserBookmarksPage />
+        </Auth>
+      ),
+    },
+    {
+      path: "/drafts",
+      element: (
+        <Auth user={user}>
+          <UserDraftsPage />
+        </Auth>
+      ),
+    },
   ];
 
   const mainDomainPublicRoutes = [{ path: "/", element: <LandingPage /> }];
@@ -107,7 +171,9 @@ function App() {
     if (detectedSubdomain) {
       dispatch(setSubDomain(detectedSubdomain));
       fetch(
-        `${import.meta.env.VITE_API_URL}/team/validate?subdomain=${detectedSubdomain}`
+        `${
+          import.meta.env.VITE_API_URL
+        }/team/validate?subdomain=${detectedSubdomain}`
       )
         .then((res) => res.json())
         .then((data) => {
