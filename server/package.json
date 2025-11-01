@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "start": "node dist/index.js",
-    "dev": "concurrently \"tsc -w\" \"nodemon ./dist/index.js\"",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "studio": "prisma studio"
-  },
+    "scripts": {
+      "start": "node dist/index.js",
+      "dev": "concurrently \"tsc -w\" \"nodemon ./dist/index.js\"",
+      "generate": "prisma generate",
+      "migrate": "prisma migrate dev",
+      "studio": "prisma studio",
+      "build": "tsc"
+    },
   "keywords": [],
   "author": "",
   "license": "ISC",

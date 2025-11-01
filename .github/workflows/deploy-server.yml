@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - "server/**"   # ✅ Trigger only when server code changes
+      - "server/**"
 
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: saas-hub
-  EC2_HOST: ec2-34-228-20-4.compute-1.amazonaws.com  # ✅ Your EC2 Public DNS
+  EC2_HOST: ec2-34-228-20-4.compute-1.amazonaws.com
   EC2_USER: ubuntu
   CONTAINER_NAME: saasapp-hub-container
 
@@ -19,11 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # ✅ Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -31,36 +29,32 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # ✅ Login to ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # 🧹 Optional: delete old image to keep ECR clean
       - name: Delete old image (optional)
         run: |
           aws ecr batch-delete-image \
             --repository-name $ECR_REPOSITORY \
             --image-ids imageTag=latest || echo "No old image found."
 
-      # 🐳 Build Docker image
+      # ⛔️ REMOVED BUILD STEP — Docker handles build
+
       - name: Build Docker image
         run: |
           cd server
           docker build -t $ECR_REPOSITORY:latest .
 
-      # 🏷️ Tag image for ECR
       - name: Tag Docker image
         run: |
           docker tag $ECR_REPOSITORY:latest \
           ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-      # 📤 Push to ECR
       - name: Push Docker image to ECR
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-      # 🚀 Deploy on EC2
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.8
         with:
@@ -68,20 +62,15 @@ jobs:
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "🛠️ Pulling latest Docker image from ECR..."
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
               sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
 
-            echo "🧹 Removing old container (if any)..."
             sudo docker stop ${{ env.CONTAINER_NAME }} || true
             sudo docker rm ${{ env.CONTAINER_NAME }} || true
 
-            echo "🚀 Pulling new image and starting container..."
             sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-            # Run the container (update port mapping if needed)
             sudo docker run -d --name ${{ env.CONTAINER_NAME }} \
-              -p 8080:8080 \
+              -p 3000:3000 \
+              --env-file /home/ubuntu/.env \
               ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-
-            echo "✅ Server deployed and running successfully on EC2!"

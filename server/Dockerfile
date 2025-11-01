@@ -1,33 +1,45 @@
-# Use Node.js 18 (lightweight)
-FROM node:18-slim
+# ---- Base Node image for building ----
+FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first (better layer caching)
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
-
-# Install pnpm and dependencies
+# Install pnpm
 RUN npm install -g pnpm
-RUN pnpm install --prod=false
 
-# Copy the rest of the project
+# Copy package files first (better caching)
+COPY package.json pnpm-lock.yaml ./
+
+# Install ALL dependencies (dev + prod)
+RUN pnpm install
+
+# Copy source
 COPY . .
 
-# Pass Prisma environment variable (needed for 'pnpm run generate')
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
+# Generate Prisma client & build TS
+RUN pnpm generate
+RUN pnpm build
 
-# Generate Prisma client and build TypeScript → JavaScript
-RUN pnpm run generate
-RUN pnpm run build
 
-# Remove dev dependencies to keep image small
-RUN pnpm prune --prod
+# ---- Production Stage ----
+FROM node:18-alpine
 
-# Expose the backend port
-EXPOSE 5000
+WORKDIR /app
 
-# Start the server
-CMD ["pnpm", "start"]
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install ONLY production deps
+RUN pnpm install --prod --frozen-lockfile
+
+# Copy built output & prisma client from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]
