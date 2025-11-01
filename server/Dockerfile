@@ -16,8 +16,10 @@ RUN pnpm install
 COPY . .
 
 # Generate Prisma client & build TS
-RUN pnpm generate
+# Generate Prisma client & build TS
+RUN DATABASE_URL="" pnpm generate
 RUN pnpm build
+
 
 
 # ---- Production Stage ----
