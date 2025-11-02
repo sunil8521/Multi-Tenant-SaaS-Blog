@@ -36,8 +36,8 @@ app.use(
       if (!origin) return callback(null, true); // allow server-side requests
 
       // Allow main + subdomains of blogapp.tech
-      const allowedPattern =
-        /^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
+      // const allowedPattern =/^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
+      const allowedPattern =/^https?:\/\/([a-z0-9-]+\.)?sunilspace\.me(?::5173)?$/;
 
       if (allowedPattern.test(origin)) {
         callback(null, true);
