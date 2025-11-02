@@ -43,6 +43,8 @@ jobs:
           cd server
           pnpm install --frozen-lockfile
           pnpm prisma generate
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
 
       - name: Run Prisma Migrations
         run: |

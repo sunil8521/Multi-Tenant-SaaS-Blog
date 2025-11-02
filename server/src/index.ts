@@ -14,6 +14,7 @@ import userRoutes from "./routes/user.routes.js";
 import teamRoutes from "./routes/team.routes.js";
 import postRoutes from "./routes/post.routes.js";
 
+
 export const envMode = process.env.NODE_ENV;
 // const port: number = Number(process.env.PORT);
 const port: number = 3000;
