@@ -9,6 +9,7 @@ import prisma from "./db/client.js";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 
+
 //route
 import userRoutes from "./routes/user.routes.js";
 import teamRoutes from "./routes/team.routes.js";
