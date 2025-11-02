@@ -157,6 +157,8 @@ function App() {
         // console.error("Error fetching profile:", error);
       }
     };
+
+    
     if (subDomain) {
       fetchProfile();
     }

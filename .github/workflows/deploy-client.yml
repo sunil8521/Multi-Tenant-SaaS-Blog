@@ -10,8 +10,8 @@ env:
   EC2_HOST: 54.175.15.154
   EC2_USER: ubuntu
   DEPLOY_PATH: /website
-  VITE_BACKEND_URL: http://api.sunilspace.me
-  VITE_API_URL : http://api.sunilspace.me/api
+  VITE_BACKEND_URL: https://api.sunilspace.me
+  VITE_API_URL : https://api.sunilspace.me/api
 
 jobs:
   deploy:
