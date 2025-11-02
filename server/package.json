@@ -9,6 +9,7 @@
       "dev": "concurrently \"tsc -w\" \"nodemon ./dist/index.js\"",
       "generate": "prisma generate",
       "migrate": "prisma migrate dev",
+      "migrate:prod": "prisma migrate deploy",
       "studio": "prisma studio",
       "build": "tsc"
     },

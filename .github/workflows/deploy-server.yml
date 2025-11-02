@@ -22,6 +22,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -33,14 +36,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Delete old image (optional)
+
+      ## ✅ Prisma Migrate using pnpm
+      - name: Install deps for migration
         run: |
-          aws ecr batch-delete-image \
-            --repository-name $ECR_REPOSITORY \
-            --image-ids imageTag=latest || echo "No old image found."
+          cd server
+          pnpm install --frozen-lockfile
+          pnpm prisma generate
 
-      # ⛔️ REMOVED BUILD STEP — Docker handles build
+      - name: Run Prisma Migrations
+        run: |
+          cd server
+          pnpm prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+
+      ## ✅ Build & Push Docker
       - name: Build Docker image
         run: |
           cd server
@@ -55,6 +67,8 @@ jobs:
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+
+      ## ✅ Deploy to EC2
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v0.1.8
         with:

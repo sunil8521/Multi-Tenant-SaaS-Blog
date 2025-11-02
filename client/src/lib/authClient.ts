@@ -1,6 +1,5 @@
-import { createAuthClient } from "better-auth/react";
+  import { createAuthClient } from "better-auth/react";
 
-export const authClient = createAuthClient({
-  baseURL: "http://api.blogapp.tech:3000", // your backend URL
-
-});
+  export const authClient = createAuthClient({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+  });

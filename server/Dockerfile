@@ -9,7 +9,8 @@ RUN pnpm install
 
 COPY . .
 
-ENV DATABASE_URL="postgresql://fake:fake@localhost:5432/fake"
+
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN pnpm generate
 RUN pnpm build
 
@@ -22,9 +23,11 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules /app/node_modules
 
-ENV NODE_ENV=production
+
+ENV NODE_ENV=PRODUCTION
 EXPOSE 3000
 
 CMD ["node", "dist/index.js"]

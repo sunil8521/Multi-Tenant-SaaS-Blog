@@ -1,9 +1,11 @@
-import { PrismaClient } from "../generated/prisma/client.js";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
+import type {PrismaClient as pc} from "@prisma/client";
 
 // Extend NodeJS global type to store Prisma instance
 declare global {
   // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
+  var prisma: pc | undefined;
 }
 
 // Use existing global in dev, or create a new instance
