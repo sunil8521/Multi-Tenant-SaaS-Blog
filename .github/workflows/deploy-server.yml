@@ -1,92 +1,104 @@
-name: Build, Push and Deploy Server to EC2 via ECR
+  name: Build, Push and Deploy Server to EC2 via ECR
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - "server/**"
+  on:
+    push:
+      branches:
+        - main
+      paths:
+        - "server/**"
 
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: saas-hub
-  EC2_HOST: 44.223.24.30
-  EC2_USER: ubuntu
-  CONTAINER_NAME: saasapp-hub-container
+  env:
+    AWS_REGION: us-east-1
+    ECR_REPOSITORY: saas-hub
+    EC2_HOST: 54.175.15.154
+    EC2_USER: ubuntu
+    CONTAINER_NAME: saasapp-hub-container
 
-jobs:
-  build-push-deploy:
-    runs-on: ubuntu-latest
+  jobs:
+    build-push-deploy:
+      runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+        - name: Install pnpm
+          run: npm install -g pnpm
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-
-      ## ✅ Prisma Migrate using pnpm
-      - name: Install deps for migration
-        run: |
-          cd server
-          pnpm install --frozen-lockfile
-          pnpm prisma generate
-        env:
-          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
-
-      - name: Run Prisma Migrations
-        run: |
-          cd server
-          pnpm prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
 
 
-      ## ✅ Build & Push Docker
-      - name: Build Docker image
-        run: |
-          cd server
-          docker build -t $ECR_REPOSITORY:latest .
+        ## ✅ Prisma Migrate using pnpm
+        - name: Install deps for migration
+          run: |
+            cd server
+            pnpm install --frozen-lockfile
+            pnpm prisma generate
+          env:
+            DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
 
-      - name: Tag Docker image
-        run: |
-          docker tag $ECR_REPOSITORY:latest \
-          ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-
-      - name: Push Docker image to ECR
-        run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        - name: Run Prisma Migrations
+          run: |
+            cd server
+            pnpm prisma migrate deploy
+          env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 
-      ## ✅ Deploy to EC2
-      # - name: Deploy on EC2
-      #   uses: appleboy/ssh-action@v0.1.8
-      #   with:
-      #     host: ${{ env.EC2_HOST }}
-      #     username: ${{ env.EC2_USER }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     script: |
-      #       aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
-      #         sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+        ## ✅ Build & Push Docker
+        - name: Build Docker image
+          run: |
+            cd server
+            docker build -t $ECR_REPOSITORY:latest .
 
-      #       sudo docker stop ${{ env.CONTAINER_NAME }} || true
-      #       sudo docker rm ${{ env.CONTAINER_NAME }} || true
+        - name: Tag Docker image
+          run: |
+            docker tag $ECR_REPOSITORY:latest \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-      #       sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        - name: Push Docker image to ECR
+          run: |
+            docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-      #       sudo docker run -d --name ${{ env.CONTAINER_NAME }} \
-      #         -p 3000:3000 \
-      #         --env-file /home/ubuntu/.env \
-      #         ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+        ## ✅ Deploy to EC2
+        - name: Deploy on EC2
+          uses: appleboy/ssh-action@v0.1.8
+          with:
+            host: ${{ env.EC2_HOST }}
+            username: ${{ env.EC2_USER }}
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              echo "Logging into ECR..."
+              aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+                sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+
+              echo "Stopping old container if exists..."
+              sudo docker stop ${{ env.CONTAINER_NAME }} || true
+
+              echo "Removing old container if exists..."
+              sudo docker rm ${{ env.CONTAINER_NAME }} || true
+
+              echo "Pulling latest image..."
+              sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+              echo "Removing old unused images..."
+              sudo docker image prune -f || true
+
+              echo "Starting new container..."
+              sudo docker run -d --name ${{ env.CONTAINER_NAME }} \
+                -p 3000:3000 \
+                --env-file /home/ubuntu/.env \
+                ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+              echo "✅ Deployment complete!"
+

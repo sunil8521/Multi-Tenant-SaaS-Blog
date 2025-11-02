@@ -7,9 +7,11 @@ on:
       - "client/**"
 
 env:
-  EC2_HOST: 44.223.24.30
+  EC2_HOST: 54.175.15.154
   EC2_USER: ubuntu
   DEPLOY_PATH: /website
+  VITE_BACKEND_URL: http://api.sunilspace.me
+  VITE_API_URL : http://api.sunilspace.me/api
 
 jobs:
   deploy:
@@ -42,6 +44,8 @@ jobs:
         run: |
           cd client
           pnpm install
+          echo "VITE_API_URL=${{ env.VITE_API_URL }}" >> .env.production
+          echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env.production
           pnpm run build
 
       - name: SSH - Clean target dir
