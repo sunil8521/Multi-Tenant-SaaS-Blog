@@ -9,9 +9,9 @@ on:
 env:
   EC2_HOST: 44.222.76.137
   EC2_USER: ubuntu
-  DEPLOY_PATH: /website/
+  DEPLOY_PATH: /hello/
   VITE_BACKEND_URL: https://api.sunilspace.me
-  VITE_API_URL: https://api.sunilspace.me/api
+  VITE_API_URL : https://api.sunilspace.me/api
 
 jobs:
   deploy:
@@ -26,6 +26,17 @@ jobs:
         with:
           node-version: 18
 
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "SSH OK"
+            hostname
+            whoami
+
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -37,7 +48,7 @@ jobs:
           echo "VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }}" >> .env.production
           pnpm run build
 
-      - name: SSH - Clean /website
+      - name: SSH - Clean target dir
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ env.EC2_HOST }}
@@ -45,9 +56,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo rm -rf ${{ env.DEPLOY_PATH }}/*
-            sudo mkdir -p ${{ env.DEPLOY_PATH }}
 
-      - name: Upload dist to EC2
+      - name: Copy dist to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ env.EC2_HOST }}
@@ -55,15 +65,3 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "client/dist/*"
           target: "${{ env.DEPLOY_PATH }}"
-
-      - name: Restart NGINX
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ env.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo chown -R ubuntu:ubuntu /website
-            sudo chmod -R 755 /website
-            sudo systemctl reload nginx
-            echo "✅ Frontend deployed & NGINX reloaded"

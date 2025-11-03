@@ -114,6 +114,7 @@ export default function PublicPostViewPage() {
         toast.success("Link copied to clipboard");
         break;
     }
+    
     setShowShareMenu(false);
   };
 
