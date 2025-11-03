@@ -45,6 +45,7 @@ app.use(
         callback(new Error("CORS not allowed for this origin: " + origin));
       }
     },
+    
     credentials: true, // ✅ Needed for cookies (BetterAuth sessions),
     methods: ["GET", "PUT", "PATCH", "POST", "DELETE"],
     // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
