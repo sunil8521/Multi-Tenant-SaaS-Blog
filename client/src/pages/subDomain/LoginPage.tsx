@@ -44,6 +44,7 @@ function LoginPage() {
       toast.error(res.error.message);
       return;
     }
+    
     if (res.data) {
       toast.success("Login successful!");
 
