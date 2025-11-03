@@ -70,6 +70,7 @@ const Format=(dateString:string):string=>{
                           {post._count.comments} comments
                         </div>
                       </div>
+                      
                     </div>
                     <div className="flex items-center gap-2">
                       <Button variant="outline" size="sm">
