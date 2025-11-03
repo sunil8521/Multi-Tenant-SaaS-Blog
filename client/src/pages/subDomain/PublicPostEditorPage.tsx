@@ -35,13 +35,13 @@ import {
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
 import {
   useCreatePostMutation,
   usePostImageMutation,
 } from "../../state/api/postApi";
 export default function PublicPostEditorPage() {
   const navigate = useNavigate();
-  // const [content, setContent] = useState("");
   const [postImage] = usePostImageMutation();
   const [createPost, { isLoading:isPublishing }] = useCreatePostMutation();
 

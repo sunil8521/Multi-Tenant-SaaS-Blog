@@ -7,7 +7,7 @@ on:
       - "client/**"
 
 env:
-  EC2_HOST: 54.175.15.154
+  EC2_HOST: 44.222.76.137
   EC2_USER: ubuntu
   DEPLOY_PATH: /website
   VITE_BACKEND_URL: https://api.sunilspace.me
