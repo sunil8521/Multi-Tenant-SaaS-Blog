@@ -1,5 +1,5 @@
 
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN pnpm generate
 RUN pnpm build
 
 
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 
 RUN npm install -g pnpm
