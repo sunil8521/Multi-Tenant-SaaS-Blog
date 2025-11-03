@@ -9,7 +9,7 @@
 
   env:
     AWS_REGION: us-east-1
-    ECR_REPOSITORY: saas-hub
+    ECR_REPOSITORY: blogrepo
     EC2_HOST: 54.175.15.154
     EC2_USER: ubuntu
     CONTAINER_NAME: saasapp-hub-container

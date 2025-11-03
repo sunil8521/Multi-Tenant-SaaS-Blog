@@ -39,7 +39,6 @@ import {
   useCreatePostMutation,
   usePostImageMutation,
 } from "../../state/api/postApi";
-import { useNavigate } from "react-router-dom";
 export default function PublicPostEditorPage() {
   const navigate = useNavigate();
   // const [content, setContent] = useState("");
