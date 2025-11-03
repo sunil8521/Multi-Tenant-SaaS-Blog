@@ -43,7 +43,7 @@ import {
 export default function PublicPostEditorPage() {
   // const [content, setContent] = useState("");
   const [postImage] = usePostImageMutation();
-  const [createPost] = useCreatePostMutation();
+  const [createPost, { isLoading:isPublishing }] = useCreatePostMutation();
 
   const [tags, setTags] = useState<string[]>([]);
   const [isPreview, setIsPreview] = useState(false);
@@ -607,9 +607,11 @@ export default function PublicPostEditorPage() {
               Save Draft
             </Button>
             <Button
+            
               size="sm"
-              className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+              className="flex-1 sm:flex-none bg-linear-to-r from-blue-500 to-blue-600 text-white pointer-coarse:"
               onClick={handlePublish}
+              disabled={isPublishing}
             >
               <Send className="mr-2 h-4 w-4" />
               Publish
@@ -894,7 +896,7 @@ export default function PublicPostEditorPage() {
                       </div>
                     </div>
 
-                    <div className="prose max-w-none dark:prose-invert break-words">
+                    <div className="prose max-w-none dark:prose-invert wrap-break-words">
                       <ReactMarkdown remarkPlugins={[remarkBreaks]}>
                         {textareaRef.current!.value}
                       </ReactMarkdown>

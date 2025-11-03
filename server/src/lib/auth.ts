@@ -5,6 +5,8 @@ import errorHandler from "../utils/errorHandler.js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { checkUserTeamMembership } from "../utils/checkUserTeamMembership.js";
 
+
+
 export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 2, // 2 days (in seconds)
@@ -65,13 +67,10 @@ export const auth = betterAuth({
     enabled: true,
   },
   trustedOrigins: [
-    // "http://localhost:5173", // Development frontend
-    // "http://blog.app:5173", // If frontend also runs on blog.app
-    // "*.blogapp.tech", // For multi-tenant subdomains
     // "http://*.blogapp.tech:5173", // Development subdomains with port
-    // "https://*.blogapp.tech" // Production subdomains
+    // "http://blogapp.tech:5173", // Development subdomains with port
     "https://sunilspace.me", // For multi-tenant subdomains
-    "https://*.sunilspace.me" // Production subdomains
+    "https://*.sunilspace.me", // Production subdomains
   ],
   advanced: {
     crossSubDomainCookies: {
