@@ -76,7 +76,7 @@ export const auth = betterAuth({
   advanced: {
     crossSubDomainCookies: {
       enabled: true,
-      domain: ".blogapp.tech",
+      domain: ".sunilspace.me",
     },
   },
   database: prismaAdapter(prisma, {
