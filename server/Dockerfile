@@ -25,9 +25,10 @@ RUN pnpm install --prod --frozen-lockfile
 COPY --from=builder /app/dist ./dist
 # COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/prisma ./prisma  
 
 
 ENV NODE_ENV=PRODUCTION
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["/bin/sh", "-c", "pnpm prisma migrate deploy && node dist/index.js"]
