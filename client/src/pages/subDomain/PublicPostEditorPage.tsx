@@ -33,14 +33,15 @@ import {
   X
 } from "lucide-react";
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   useCreatePostMutation,
   usePostImageMutation,
 } from "../../state/api/postApi";
-
+import { useNavigate } from "react-router-dom";
 export default function PublicPostEditorPage() {
+  const navigate = useNavigate();
   // const [content, setContent] = useState("");
   const [postImage] = usePostImageMutation();
   const [createPost, { isLoading:isPublishing }] = useCreatePostMutation();
@@ -565,6 +566,7 @@ export default function PublicPostEditorPage() {
     try {
       const res = await createPost(postData).unwrap();
       toast.success(res.message)
+      navigate("/my-posts")
     } catch (err) {
       console.log(err);
     }
@@ -609,7 +611,7 @@ export default function PublicPostEditorPage() {
             <Button
             
               size="sm"
-              className="flex-1 sm:flex-none bg-linear-to-r from-blue-500 to-blue-600 text-white pointer-coarse:"
+              className="flex-1 sm:flex-none bg-linear-to-r from-blue-500 to-blue-600 text-white cursor-pointer"
               onClick={handlePublish}
               disabled={isPublishing}
             >
