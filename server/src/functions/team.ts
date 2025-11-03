@@ -6,8 +6,6 @@ import { auth } from "../lib/auth.js";
 import { sendEmailJob } from "../utils/jobs/email/queue.js";
 import { welcomeEmailTemplate } from "../utils/constants.js";
 
-const ctx = await auth.$context;
-
 export const CreateTeam = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -19,6 +17,14 @@ export const CreateTeam = TryCatch(
       subdomain,
       industry,
     } = req.body;
+
+    // get better-auth context per-request
+    const ctx = await auth.$context;
+
+    // basic validation
+    if (!fullName || !email || !confirmPassword || !teamName || !subdomain) {
+      return next(new ErrorHandler(400, "Missing required fields"));
+    }
 
     // ✅ Hash the password securely
     const hashedPass = await ctx.password.hash(confirmPassword);
@@ -47,7 +53,7 @@ export const CreateTeam = TryCatch(
       const teamData = await tx.team.create({
         data: {
           name: teamName,
-          subdomain,
+          subdomain: subdomain.toLowerCase(),
           category: industry,
           ownerId: userData.id,
         },
@@ -64,17 +70,20 @@ export const CreateTeam = TryCatch(
 
       return { teamData, userData };
     });
-    await sendEmailJob({
+
+    // send welcome email (fire-and-forget)
+    sendEmailJob({
       to: email,
       subject: "Welcome to Our Team Management App!",
       html: welcomeEmailTemplate(
         teamName,
         subdomain,
-        "http://localhost:3000",
+        "https://" + subdomain + ".sunilspace.me",
         email,
         fullName
       ),
-    });
+    }).catch((err) => console.error("Email job enqueue failed", err));
+
     // ✅ 5. Send response
     res.status(201).json({
       success: true,
@@ -94,7 +103,6 @@ export const CheckSubdomin = TryCatch(
       where: { subdomain: subdomain.toLowerCase() },
       select: { id: true },
     });
-
     res.json({ exists: !!team });
   }
 );

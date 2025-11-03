@@ -251,7 +251,7 @@ export const SignupAndJoinTeam = TryCatch(
       html: teamMemberWelcomeTemplate(
         fullName,
         team.name,
-        `http://${team.subdomain}.localhost:3000`
+        `http://${team.subdomain}.sunilspace.me`
       ),
     });
 

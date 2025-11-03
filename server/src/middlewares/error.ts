@@ -7,10 +7,9 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+console.error(err);
   let statusCode = 500;
   let message = "Internal Server Error";
-//   console.log("jhkhkhkhkhkh")
-// console.error(err)
   if (err?.name === "PrismaClientKnownRequestError") {
     if (err.code === "P2002") {
       message = `${(err.meta?.target || []).join(", ")} already exists`;

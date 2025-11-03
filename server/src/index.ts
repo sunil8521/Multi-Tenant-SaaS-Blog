@@ -17,7 +17,6 @@ import postRoutes from "./routes/post.routes.js";
 
 
 export const envMode = process.env.NODE_ENV;
-// const port: number = Number(process.env.PORT);
 const port: number = 3000;
 const app = express();
 
@@ -36,11 +35,11 @@ app.use(
       if (!origin) return callback(null, true); // allow server-side requests
 
       // Allow main + subdomains of blogapp.tech
-      // const allowedPattern =/^https?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
-      const allowedPattern =/^https?:\/\/([a-z0-9-]+\.)?sunilspace\.me(?::5173)?$/;
+      const allowedPattern =/^http?:\/\/([a-z0-9-]+\.)?blogapp\.tech(?::5173)?$/;
+      const allowedPatterns = /^https?:\/\/([a-z0-9-]+\.)?sunilspace\.me$/;
 
-      if (allowedPattern.test(origin)) {
-        callback(null, true);
+      if (allowedPattern.test(origin)||allowedPatterns.test(origin)) {
+        callback(null, true); 
       } else {
         callback(new Error("CORS not allowed for this origin: " + origin));
       }
@@ -52,11 +51,11 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
+  res.json({ message: "Hello, World!" });
 
-  res.send("Hello, World!");
 });
 
 // your routes here

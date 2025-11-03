@@ -87,11 +87,13 @@ export default function TeamSignupForm({ className }: { className?: string }) {
       const data = await response.json();
       toast.success(data.message);
       const currentHost = window.location.hostname;
-      const currentPort = window.location.port
-        ? `:${window.location.port}`
-        : "";
+      // const currentPort = window.location.port
+      //   ? `:${window.location.port}`
+      //   : "";
       const protocol = window.location.protocol;
-      const teamUrl = `${protocol}//${data.subdomain}.${currentHost}${currentPort}`;
+      // const teamUrl = `${protocol}//${data.subdomain}.${currentHost}${currentPort}`;
+      const teamUrl = `${protocol}//${data.subdomain}.${currentHost}`;
+      console.log("Redirecting to:", teamUrl);
       // Redirect to the new subdomain
       window.location.href = teamUrl;
     } catch (err) {
