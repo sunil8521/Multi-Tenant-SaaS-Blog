@@ -9,7 +9,7 @@ on:
 env:
   EC2_HOST: 44.222.76.137
   EC2_USER: ubuntu
-  DEPLOY_PATH: /website
+  DEPLOY_PATH: /website/
   VITE_BACKEND_URL: https://api.sunilspace.me
   VITE_API_URL : https://api.sunilspace.me/api
 
@@ -63,5 +63,5 @@ jobs:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "client/dist/."
+          source: "client/dist/*"
           target: "${{ env.DEPLOY_PATH }}"

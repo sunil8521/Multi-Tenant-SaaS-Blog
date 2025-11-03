@@ -69,7 +69,6 @@ export default function TeamSignupForm({ className }: { className?: string }) {
     ]);
     if (valid) setStep(2);
   };
-
   const onBack = () => setStep(1);
 
   const onSubmit = async (values: FormValues) => {
