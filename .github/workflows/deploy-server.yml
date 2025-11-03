@@ -37,62 +37,62 @@
           uses: aws-actions/amazon-ecr-login@v2
 
 
-        ## ✅ Prisma Migrate using pnpm
-        - name: Install deps & run migrations
-          run: |
-            cd server
-            pnpm install --frozen-lockfile
-            pnpm prisma generate
-            pnpm prisma migrate deploy
-          env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-
-        ## ✅ Build & Push Docker
-        # - name: Build Docker image
+        # ## ✅ Prisma Migrate using pnpm
+        # - name: Install deps & run migrations
         #   run: |
         #     cd server
-        #     docker build -t $ECR_REPOSITORY:latest .
-
-        # - name: Tag Docker image
-        #   run: |
-        #     docker tag $ECR_REPOSITORY:latest \
-        #     ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-
-        # - name: Push Docker image to ECR
-        #   run: |
-        #     docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+        #     pnpm install --frozen-lockfile
+        #     pnpm prisma generate
+        #     pnpm prisma migrate deploy
+        #   env:
+        #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 
-        # ## ✅ Deploy to EC2
-        # - name: Deploy on EC2
-        #   uses: appleboy/ssh-action@v0.1.8
-        #   with:
-        #     host: ${{ env.EC2_HOST }}
-        #     username: ${{ env.EC2_USER }}
-        #     key: ${{ secrets.EC2_SSH_KEY }}
-        #     script: |
-        #       echo "Logging into ECR..."
-        #       aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
-        #         sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+        # ✅ Build & Push Docker
+        - name: Build Docker image
+          run: |
+            cd server
+            docker build -t $ECR_REPOSITORY:latest .
 
-        #       echo "Stopping old container if exists..."
-        #       sudo docker stop ${{ env.CONTAINER_NAME }} || true
+        - name: Tag Docker image
+          run: |
+            docker tag $ECR_REPOSITORY:latest \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-        #       echo "Removing old container if exists..."
-        #       sudo docker rm ${{ env.CONTAINER_NAME }} || true
+        - name: Push Docker image to ECR
+          run: |
+            docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-        #       echo "Pulling latest image..."
-        #       sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
-        #       echo "Removing old unused images..."
-        #       sudo docker image prune -f || true
+        ## ✅ Deploy to EC2
+        - name: Deploy on EC2
+          uses: appleboy/ssh-action@v0.1.8
+          with:
+            host: ${{ env.EC2_HOST }}
+            username: ${{ env.EC2_USER }}
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              echo "Logging into ECR..."
+              aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+                sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
 
-        #       echo "Starting new container..."
-        #       sudo docker run -d --name ${{ env.CONTAINER_NAME }} \
-        #         -p 3000:3000 \
-        #         --env-file /home/ubuntu/.env \
-        #         ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+              echo "Stopping old container if exists..."
+              sudo docker stop ${{ env.CONTAINER_NAME }} || true
 
-        #       echo "✅ Deployment complete!"
+              echo "Removing old container if exists..."
+              sudo docker rm ${{ env.CONTAINER_NAME }} || true
+
+              echo "Pulling latest image..."
+              sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+              echo "Removing old unused images..."
+              sudo docker image prune -f || true
+
+              echo "Starting new container..."
+              sudo docker run -d --name ${{ env.CONTAINER_NAME }} \
+                -p 3000:3000 \
+                --env-file /home/ubuntu/.env \
+                ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+              echo "✅ Deployment complete!"
 
