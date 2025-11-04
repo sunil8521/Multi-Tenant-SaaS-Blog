@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Search, Edit, Eye, Trash2, Calendar, MessageSquare,Heart } from "lucide-react"
 import { toast } from "sonner"
 import {useGetMyPostQuery} from "@/state/api/postApi"
+import {Link} from 'react-router-dom';
 export default function UserMyPostsPage() {
   const { data: myPosts, isLoading, error } = useGetMyPostQuery()
   
@@ -31,7 +32,7 @@ const Format=(dateString:string):string=>{
             <p className="text-muted-foreground">Manage and view your published blog posts</p>
           </div>
           <Button asChild>
-            <a href="/write">Write New Post</a>
+            <Link to="/write">Write New Post</Link>
           </Button>
         </div>
 
@@ -97,7 +98,7 @@ const Format=(dateString:string):string=>{
               <h3 className="font-semibold mb-2">No posts yet</h3>
               <p className="text-muted-foreground mb-4">Start writing your first blog post</p>
               <Button asChild>
-                <a href="/blog/write">Write Your First Post</a>
+                <Link to="/write">Write Your First Post</Link>
               </Button>
             </CardContent>
           </Card>

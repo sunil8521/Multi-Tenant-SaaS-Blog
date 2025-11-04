@@ -5,8 +5,6 @@ import errorHandler from "../utils/errorHandler.js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { checkUserTeamMembership } from "../utils/checkUserTeamMembership.js";
 
-
-
 export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 2, // 2 days (in seconds)
@@ -66,16 +64,23 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [
-    // "http://*.blogapp.tech:5173", // Development subdomains with port
-    // "http://blogapp.tech:5173", // Development subdomains with port
-    "https://sunilspace.me", // For multi-tenant subdomains
-    "https://*.sunilspace.me", // Production subdomains
-  ],
+  trustedOrigins:
+    process.env.NODE_ENV === "PRODUCTION"
+      ? [
+          "https://sunilspace.me", // For multi-tenant subdomains
+          "https://*.sunilspace.me", // Production subdomains
+        ]
+      : [
+          "http://*.blogapp.tech:5173", // Development subdomains with port
+          "http://blogapp.tech:5173", // Development subdomains with port
+        ],
   advanced: {
     crossSubDomainCookies: {
       enabled: true,
-      domain: ".sunilspace.me",
+      domain:
+        process.env.NODE_ENV === "PRODUCTION"
+          ? ".sunilspace.me"
+          : ".blogapp.tech",
     },
   },
   database: prismaAdapter(prisma, {

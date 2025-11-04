@@ -657,7 +657,7 @@ export default function PublicPostEditorPage() {
                     {/* Image Preview */}
                     <div className="w-[180px] h-[100px] border border-muted-foreground/30 rounded-md overflow-hidden">
                       <img
-                        src={`https://d1egxlljzt31im.cloudfront.net/${uploadedFileKey}`}
+                        src={`https://blogapp0x.s3.us-east-1.amazonaws.com/${uploadedFileKey}`}
                         alt="Cover Preview"
                         className="w-full h-full object-cover"
                       />
@@ -873,7 +873,7 @@ export default function PublicPostEditorPage() {
                     {uploadedFileKey && (
                       <div className="aspect-video relative overflow-hidden rounded-lg">
                         <img
-                          src={`https://d1egxlljzt31im.cloudfront.net/${uploadedFileKey}`}
+                          src={`https://blogapp0x.s3.us-east-1.amazonaws.com/${uploadedFileKey}`}
                           alt="Featured"
                           className="w-full h-full object-cover"
                         />

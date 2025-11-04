@@ -339,7 +339,8 @@ const toggleReplies = async (commentId: string) => {
           {postData?.image && (
             <div className="aspect-video relative overflow-hidden rounded-lg mb-8">
               <img
-                src={`https://d1egxlljzt31im.cloudfront.net/${postData.image}`}
+                // src={`https://d1egxlljzt31im.cloudfront.net/${postData.image}`}
+                src={`https://blogapp0x.s3.us-east-1.amazonaws.com/${postData.image}`}
                 alt={postData.title}
                 className="w-full h-full object-cover"
               />
