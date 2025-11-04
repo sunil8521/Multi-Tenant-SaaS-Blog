@@ -680,14 +680,14 @@ export default function PublicPostEditorPage() {
                         />
                       </label>
 
-                      <button
+                      {/* <button
                         type="button"
                         className="text-sm text-red-500 hover:text-red-600"
                         // onClick={handleDelete}
                         disabled={loading}
                       >
                         Remove
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 )}
