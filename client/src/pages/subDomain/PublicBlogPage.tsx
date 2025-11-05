@@ -31,7 +31,7 @@ import {
   useGetAllTagsQuery,
 } from "../../state/api/postApi";
 import { useAppSelector } from "../../state/hook";
-
+import BookmarkButton from "@/components/custom/BookmarkButton";
 
 function PublicBlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -275,9 +275,7 @@ function PublicBlogPage() {
                                 <MessageCircle className="mr-1 h-4 w-4" />
                                 {post.commentCount}
                               </div>
-                              <Button variant="ghost" size="sm" onClick={() => handleBookmark(post.id)}>
-                                <Bookmark className="h-4 w-4" />
-                              </Button>
+                              <BookmarkButton postId={post.id} isMarked={false} />
                             </div>
                           </div>
                         </div>

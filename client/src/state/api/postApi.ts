@@ -325,6 +325,7 @@ export const {
   useCreatePostCommentMutation,
   useCreateCommentReplyMutation,
   useLazyGetCommentRepliesQuery,
-  useGetMyPostQuery
+  useGetMyPostQuery,
+  useBookmarkPostMutation
 } = postApi;
 export default postApi;

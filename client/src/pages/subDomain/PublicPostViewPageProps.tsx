@@ -34,6 +34,7 @@ import {
   useLazyGetCommentRepliesQuery
 } from "../../state/api/postApi";
 import { useAppSelector } from "../../state/hook";
+import BookmarkButton from "@/components/custom/BookmarkButton";
 
 // Mock data for demonstration
 
@@ -59,7 +60,6 @@ export default function PublicPostViewPage() {
   // const [page, setPage] = useState(1);
   // const [hasMore, setHasMore] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const commentInputRef =  useRef<HTMLInputElement|null>(null);
@@ -282,17 +282,9 @@ const toggleReplies = async (commentId: string) => {
                     className={`mr-2 h-4 w-4 ${isLiked ? "fill-current" : ""}`}
                   />
                   {Number(postData?.likeCount) + (isLiked ? 1 : 0)}
-                </Button>
+                </Button>``
 
-                <Button
-                  variant={isBookmarked ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setIsBookmarked(!isBookmarked)}
-                >
-                  <Bookmark
-                    className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
-                  />
-                </Button>
+                <BookmarkButton postId={postData?.id} isMarked={false} />
 
                 <div className="relative">
                   <Button
@@ -348,7 +340,7 @@ const toggleReplies = async (commentId: string) => {
           )}
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none break-words dark:prose-invert  min-h-[400px] mb-8">
+          <div className="prose prose-lg max-w-none wrap-break-words dark:prose-invert  min-h-[400px] mb-8">
             <ReactMarkdown remarkPlugins={[remarkBreaks]}>
               {postData?.content}
             </ReactMarkdown>

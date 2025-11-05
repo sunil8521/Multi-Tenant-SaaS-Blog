@@ -169,7 +169,6 @@ export const GetAllPost = TryCatch(
             select: {
               comments: true,
               likes: true,
-              bookmarks: true,
             },
           },
           tags: {
