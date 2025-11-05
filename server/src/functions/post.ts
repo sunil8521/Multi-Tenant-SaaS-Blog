@@ -164,10 +164,12 @@ export const GetAllPost = TryCatch(
               email: true,
             },
           },
+        
           _count: {
             select: {
               comments: true,
               likes: true,
+              bookmarks: true,
             },
           },
           tags: {
