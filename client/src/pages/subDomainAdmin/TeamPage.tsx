@@ -149,7 +149,6 @@ export default function TeamPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [sendInvite, { isLoading: isSending, isError }] =
     useSendInviteMutation();
   const emailsRef = useRef<HTMLInputElement>(null);
@@ -331,9 +330,7 @@ export default function TeamPage() {
                       <SelectItem value="MEMBER">
                         Member - Can view posts and write posts
                       </SelectItem>
-                      {/* <SelectItem value="WRITER">
-                        Writer - Can create and edit own posts
-                      </SelectItem> */}
+                      
 
                       <SelectItem value="ADMIN">Admin - Full access</SelectItem>
                     </SelectContent>
@@ -362,8 +359,8 @@ export default function TeamPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? (
+                  <Button type="submit" disabled={isSending}>
+                    {isSending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Sending...
@@ -410,7 +407,7 @@ export default function TeamPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Authors</CardTitle>
             <Edit className="h-4 w-4 text-muted-foreground" />
@@ -421,7 +418,7 @@ export default function TeamPage() {
             </div>
             <p className="text-xs text-muted-foreground">Content creators</p>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -167,8 +167,8 @@ function App() {
   useEffect(() => {
     const hostname = window.location.hostname;
     const parts = hostname.split(".");
-    const baseDomain = "sunilspace.me";
-    // const baseDomain = "blogapp.tech";
+    // const baseDomain = "sunilspace.me";
+    const baseDomain = "blogapp.tech";
     const isSubdomain = parts.length === 3 && hostname.endsWith(baseDomain);
     const detectedSubdomain = isSubdomain ? parts[0] : null;
     if (detectedSubdomain) {

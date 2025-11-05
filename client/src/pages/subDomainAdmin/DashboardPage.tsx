@@ -171,7 +171,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Engagement</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -180,7 +180,7 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">{teamStats.engagementRate}%</div>
               <p className="text-xs text-muted-foreground">+5% from last week</p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Main Content Grid */}

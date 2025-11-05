@@ -41,9 +41,6 @@ function PublicLayout() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TL</span>
-              </div>
               <span className="font-bold text-xl">TeamLog</span>
             </Link>
 
@@ -210,10 +207,9 @@ function PublicLayout() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">TB</span>
-                </div>
-                <span className="font-bold text-xl">TeamLog</span>
+                <Link to="/" className="flex items-center space-x-2">
+                  <span className="font-bold text-xl">TeamLog</span>
+                </Link>
               </div>
               <p className="text-sm text-muted-foreground">
                 The collaborative blogging platform for teams and individuals.

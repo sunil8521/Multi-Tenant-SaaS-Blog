@@ -32,10 +32,10 @@ import { cn } from "../lib/utils";
 
 const navigation = [
   { name: "Home", to: "dashboard", icon: Home },
-  { name: "Posts", to: "posts", icon: FileText },
+  // { name: "Posts", to: "posts", icon: FileText },
   { name: "Team", to: "team", icon: Users },
-  { name: "Analytics", to: "analytics", icon: BarChart3 },
-  { name: "Settings", to: "settings", icon: Settings },
+  // { name: "Analytics", to: "analytics", icon: BarChart3 },
+  // { name: "Settings", to: "settings", icon: Settings },
 ];
 
 export default function MainLayout() {
@@ -95,7 +95,7 @@ export default function MainLayout() {
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hiden">
         {/* Header */}
-        <header className="flex h-16 items-center justify-between border-b bg-card px-6">
+        {/* <header className="flex h-16 items-center justify-between border-b bg-card px-6">
           <div className="flex items-center space-x-4">
             <Sheet>
               <SheetTrigger asChild>
@@ -118,10 +118,10 @@ export default function MainLayout() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            </Button> */}
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -159,7 +159,9 @@ export default function MainLayout() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </header>
+        </header> */}
+
+        
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-6 bg-muted/10">
           <Outlet />

@@ -485,7 +485,7 @@ export const UpdateMyPost = TryCatch(
 
     // 1. Get post
     const post = await prisma.post.findFirst({
-      where: { slug, teamId:teamId!, }
+      where: { slug, teamId: teamId! },
     });
 
     if (!post) {
@@ -493,7 +493,7 @@ export const UpdateMyPost = TryCatch(
     }
 
     // 2. Authorization check
-    if (post.authorId !== userId ) {
+    if (post.authorId !== userId) {
       return next(new ErrorHandler(403, "Not authorized to update this post"));
     }
 
@@ -507,10 +507,12 @@ export const UpdateMyPost = TryCatch(
 
       // ensure unique slug inside team
       const slugExists = await prisma.post.findFirst({
-        where: { slug: newSlug, teamId: teamId!, NOT: { id: post.id } }
+        where: { slug: newSlug, teamId: teamId!, NOT: { id: post.id } },
       });
       if (slugExists) {
-        return next(new ErrorHandler(409, "A post with this title already exists"));
+        return next(
+          new ErrorHandler(409, "A post with this title already exists")
+        );
       }
     }
 
@@ -522,8 +524,8 @@ export const UpdateMyPost = TryCatch(
         slug: newSlug,
         content,
         image,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     // 5. Update tags if provided
@@ -533,33 +535,32 @@ export const UpdateMyPost = TryCatch(
       await prisma.postOnTag.createMany({
         data: tags.map((t: string) => ({
           postId: post.id,
-          tagId: t // you should validate tags exist or create on fly
-        }))
+          tagId: t, // you should validate tags exist or create on fly
+        })),
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Post updated successfully",
-      data: updatedPost
+      data: updatedPost,
     });
   }
-);//TODO: improve tag handling
-
+); //TODO: improve tag handling
 
 export const GetMyPost = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?.id;  // user from auth middleware
+    const userId = req.user?.id; // user from auth middleware
     const teamId = req.teamId;
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    if (!userId || !teamId ) {
-      return next(new ErrorHandler(400,"Unauthorized or missing team/subdomain"));
+    if (!userId || !teamId) {
+      return next(
+        new ErrorHandler(400, "Unauthorized or missing team/subdomain")
+      );
     }
-
-  
 
     // ✅ fetch only posts created by current user
     const posts = await prisma.post.findMany({
@@ -602,7 +603,6 @@ export const GetMyPost = TryCatch(
   }
 );
 
-
 export const DeleteMyPost = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { slug } = req.params;
@@ -612,7 +612,7 @@ export const DeleteMyPost = TryCatch(
 
     // Ensure slug exists
     if (!slug) {
-      return next(new ErrorHandler(400,"Slug is required"));
+      return next(new ErrorHandler(400, "Slug is required"));
     }
 
     // Find post
@@ -620,31 +620,30 @@ export const DeleteMyPost = TryCatch(
       where: {
         slug,
         teamId: teamId!,
-      }
+      },
     });
 
     if (!post) {
-      return next(new ErrorHandler(404,"Post not found in your team"));
+      return next(new ErrorHandler(404, "Post not found in your team"));
     }
 
     // Authorization: Only owner or admin can delete
     // if (post.authorId !== userId && role !== "ADMIN") {
-    if (post.authorId !== userId ) {
-      return next(new ErrorHandler(403,"Not authorized to delete this post"));
+    if (post.authorId !== userId) {
+      return next(new ErrorHandler(403, "Not authorized to delete this post"));
     }
 
     // Delete post
     await prisma.post.delete({
-      where: { id: post.id }
+      where: { id: post.id },
     });
 
     return res.status(200).json({
       success: true,
-      message: "Post deleted successfully"
+      message: "Post deleted successfully",
     });
   }
 );
-
 
 export const PresignedUrl = TryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -658,3 +657,36 @@ export const PresignedUrl = TryCatch(
     });
   }
 );
+
+export const toggleBookmark = TryCatch(async (req, res) => {
+  const { postId } = req.body;
+  const { user } = req;
+
+  // Check if bookmark exists
+  const existing = await prisma.bookmark.findUnique({
+    where: {
+      userId_postId: { userId: user!.id, postId },
+    },
+  });
+
+  if (existing) {
+    // Remove bookmark
+    await prisma.bookmark.delete({
+      where: {
+        userId_postId: { userId: user!.id, postId },
+      },
+    });
+
+    return res.json({ bookmarked: false, message: "Bookmark removed" });
+  }
+
+  // Create bookmark
+  await prisma.bookmark.create({
+    data: {
+      userId: user!.id,
+      postId,
+    },
+  });
+
+  return res.json({ bookmarked: true, message: "Bookmarked" });
+});

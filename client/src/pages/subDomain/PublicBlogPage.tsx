@@ -65,6 +65,12 @@ function PublicBlogPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const handleBookmark = (postId: string) => {
+
+    console.log("Bookmark clicked for post:", postId);
+
+  }
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Section */}
@@ -207,7 +213,7 @@ function PublicBlogPage() {
                             <img
                               src={
                                 post.image ?
-                                `https://d1egxlljzt31im.cloudfront.net/${post.image}` :
+                                `https://blogapp0x.s3.us-east-1.amazonaws.com/${post.image}` :
                                 "https://placehold.co/600x400?text=Image\n+Not+Found"
                               }
                               alt={post.title}
@@ -269,7 +275,7 @@ function PublicBlogPage() {
                                 <MessageCircle className="mr-1 h-4 w-4" />
                                 {post.commentCount}
                               </div>
-                              <Button variant="ghost" size="sm">
+                              <Button variant="ghost" size="sm" onClick={() => handleBookmark(post.id)}>
                                 <Bookmark className="h-4 w-4" />
                               </Button>
                             </div>

@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { Book } from "lucide-react";
 
 //------------------------------
 interface PostImageResponse {
@@ -296,6 +297,16 @@ const postApi = createApi({
       }),
             providesTags: [{ type: "MyPosts", id: "LIST" }]
 
+     }),
+     BookmarkPost: builder.mutation<{ bookmarked: boolean; message: string }, { postId: string }>({
+      query: ({ postId }) => ({
+        url: `/post/bookmark-post`,
+        method: "POST",
+        body: { postId },
+      }),
+      //  invalidatesTags: (_r, _e, { postId }) => [
+      //   { type: "SinglePost", id: postId }
+      // ]
      }),
      
 
